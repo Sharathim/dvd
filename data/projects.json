@@ -1,0 +1,57 @@
+[
+    {
+        "id": 1,
+        "title": "Azure Heights Villa",
+        "description": "A premium smart villa with sky-lit courtyard, infinity-edge pool, and custom teak interiors.",
+        "category": "residential",
+        "status": "completed",
+        "location": "ECR, Chennai",
+        "year": "2024",
+        "image": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&q=80",
+        "date_created": "2026-04-15"
+    },
+    {
+        "id": 2,
+        "title": "Meridian Corporate Tower",
+        "description": "A 12-storey office development featuring high-performance facade systems and adaptive floor layouts.",
+        "category": "commercial",
+        "status": "completed",
+        "location": "OMR",
+        "year": "2023",
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&q=80",
+        "date_created": "2026-04-15"
+    },
+    {
+        "id": 3,
+        "title": "Palmwoods Residences",
+        "description": "A gated apartment enclave with 120 premium homes, podium gardens, and curated lifestyle amenities.",
+        "category": "apartments",
+        "status": "completed",
+        "location": "Anna Nagar",
+        "year": "2023",
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&q=80",
+        "date_created": "2026-04-15"
+    },
+    {
+        "id": 4,
+        "title": "Serenity Courtyard Home",
+        "description": "A minimalist courtyard residence balancing passive cooling, warm textures, and open family spaces.",
+        "category": "residential",
+        "status": "ongoing",
+        "location": "Adyar",
+        "year": "2025",
+        "image": "https://images.unsplash.com/photo-1600566753086-00f18fe6ba68?w=1200&q=80",
+        "date_created": "2026-04-15"
+    },
+    {
+        "id": 5,
+        "title": "The Galleria Mall",
+        "description": "A mixed-use retail and entertainment complex with multiplex, food atrium, and rooftop activity deck.",
+        "category": "retail",
+        "status": "completed",
+        "location": "Velachery",
+        "year": "2022",
+        "image": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200&q=80",
+        "date_created": "2026-04-15"
+    }
+]
