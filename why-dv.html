@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800;900&family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&family=Bebas+Neue&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="static/css/site.css">
@@ -30,27 +30,30 @@
         <div class="container header-inner">
             <a href="index.html" class="brand" aria-label="DV Dream Homes home">
                 <span class="brand-mark">DV</span>
-                <span class="brand-name">Dream Homes</span>
+                <span class="brand-name">Dream Homes <span>Premium Real Estate</span></span>
             </a>
             <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation" aria-expanded="false">
                 <i class="fas fa-bars"></i>
             </button>
             <nav class="nav-menu" data-nav-menu>
-                <a href="index.html">Home</a>
+                <a href="index.html" class="home-link" aria-label="Home">
+                    <img src="homelogo.png" alt="Home" class="home-logo">
+                </a>
                 <a href="team-dv.html">Team DV</a>
                 <a href="why-dv.html" class="active">Why DV</a>
                 <a href="completed-projects.html">Completed Projects</a>
                 <div class="has-dropdown">
-                    <button class="dropdown-toggle" data-dropdown-toggle>Ongoing Projects <i
+                    <!-- <button class="dropdown-toggle" data-dropdown-toggle>Ongoing Projects <i
                             class="fas fa-angle-down"></i></button>
                     <div class="dropdown-menu">
                         <a href="dv-emerald.html">DV Emerald</a>
                         <a href="dv-marina.html">DV Marina</a>
                         <a href="dv-empire.html">DV Empire</a>
-                    </div>
+                    </div> -->
+                    <button class="dropdown-toggle" data-dropdown-toggle>Ongoing Projects</button>
                 </div>
                 <a href="contact.html">Contact</a>
-                <a href="contact.html#contactForm" class="appointment-btn">Appointment</a>
+                <a href="contact.html#contactForm" class="appointment-btn">Book Appointment</a>
             </nav>
         </div>
     </header>
@@ -73,29 +76,34 @@
                     home, offering exclusive features tailored for today's modern lifestyle.</p>
 
                 <div class="numbered-block">
+                    <div class="block-icon"><i class="fa fa-star"></i></div>
                     <h3>1. Enhanced Comfort and Elegance</h3>
                     <p>From high-quality flooring and designer lighting to sleek kitchen fittings and sophisticated
                         fixtures, every detail is crafted to exude elegance. Living in such a refined environment
                         transforms everyday moments into a five-star experience.</p>
                 </div>
                 <div class="numbered-block">
+                    <div class="block-icon"><i class="fa fa-swimmer"></i></div>
                     <h3>2. State-of-the-Art Amenities</h3>
                     <p>Our premium residences feature curated amenities such as fitness centers, serene yoga studios,
                         resort-style pools, landscaped gardens, and smart home automation systems. These amenities go
                         beyond convenience to elevate your routine.</p>
                 </div>
                 <div class="numbered-block">
+                    <div class="block-icon"><i class="fa fa-map-pin"></i></div>
                     <h3>3. Prime Locations and Accessibility</h3>
                     <p>Projects are typically located in the most desirable urban neighborhoods with strong
                         connectivity to workplaces, schools, hospitals, and entertainment hubs, making life easier and
                         more valuable.</p>
                 </div>
                 <div class="numbered-block">
+                    <div class="block-icon"><i class="fa fa-lock"></i></div>
                     <h3>4. Enhanced Security and Privacy</h3>
                     <p>With controlled access, modern surveillance, and secure community layouts, we ensure your family
                         enjoys peace of mind while living in a private, protected environment.</p>
                 </div>
                 <div class="numbered-block">
+                    <div class="block-icon"><i class="fa fa-leaf"></i></div>
                     <h3>5. Sustainable and Eco-Friendly Living</h3>
                     <p>Our modern apartments are designed with sustainable practices including efficient lighting,
                         eco-friendly materials, and smart water systems that support both better living and a healthier
@@ -129,33 +137,39 @@
         </section>
 
         <section class="section">
-            <div class="container history-grid">
-                <article class="history-card">
+            <div class="container history-grid timeline-grid">
+                <article class="history-card timeline-card">
+                    <div class="timeline-marker">2000s</div>
                     <h4>The Early 2000s: A Nascent Stage</h4>
                     <p>At the turn of the millennium, real estate in India was still in its formative years. The sector
                         was primarily dominated by local developers with limited standardization.</p>
                 </article>
-                <article class="history-card">
+                <article class="history-card timeline-card">
+                    <div class="timeline-marker">2005-2010</div>
                     <h4>2005-2010: IT Boom and Urban Expansion</h4>
                     <p>The mid-2000s marked rapid transformation led by IT and infrastructure growth. Urban centers saw
                         integrated townships and luxury housing projects gain momentum.</p>
                 </article>
-                <article class="history-card">
+                <article class="history-card timeline-card">
+                    <div class="timeline-marker">2010-2015</div>
                     <h4>2010-2015: Rising Consumer Expectations</h4>
                     <p>Post 2010, affordability and quality became equally important. Developers introduced better
                         amenities, modern architecture, and customer-focused offerings.</p>
                 </article>
-                <article class="history-card">
+                <article class="history-card timeline-card">
+                    <div class="timeline-marker">2016</div>
                     <h4>2016: The RERA Revolution</h4>
                     <p>RERA transformed the industry by mandating project registration, transparency, and strict
                         developer accountability, bringing new confidence to buyers.</p>
                 </article>
-                <article class="history-card">
+                <article class="history-card timeline-card">
+                    <div class="timeline-marker">2017-2020</div>
                     <h4>2017-2020: Technology and Sustainability</h4>
                     <p>Virtual tours, digital documentation, smart homes, and green design principles became mainstream,
                         redefining what buyers expect from modern homes.</p>
                 </article>
-                <article class="history-card">
+                <article class="history-card timeline-card">
+                    <div class="timeline-marker">2020-2025</div>
                     <h4>2020-2025: Resilience and Future Growth</h4>
                     <p>Despite pandemic-era disruption, demand rebounded with stronger trust, digital workflows, and
                         innovation. Indian real estate is now poised for sustainable growth.</p>
@@ -208,7 +222,7 @@
         <div class="footer-bottom">
             <div class="container footer-bottom-inner">
                 <p>&copy; <span data-year></span> DV Dream Homes, All Right Reserved.</p>
-                <p>Designed by <span>Trimsolutions</span></p>
+                <p>Designed by <span>TechScale</span></p>
             </div>
         </div>
     </footer>
@@ -219,3 +233,5 @@
 </body>
 
 </html>
+
+
