@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>DV Dream Homes Admin Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Bebas+Neue&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root {
+            --ink: #0b0b0b;
+            --coal: #171717;
+            --text: #2c2c2c;
+            --muted: #686868;
+            --line: rgba(11, 11, 11, 0.12);
+            --white: #ffffff;
+            --soft: #f6f6f3;
+            --gold: #f5c400;
+            --gold-soft: rgba(245, 196, 0, 0.18);
+            --red: #c8102e;
+            --font-display: "Cormorant Garamond", Georgia, serif;
+            --font-head: "Bebas Neue", Impact, sans-serif;
+            --font-body: "DM Sans", Arial, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--soft);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .admin-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, var(--coal) 0%, var(--ink) 100%);
+            color: var(--white);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 100;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .header-logo {
+            font-size: 1.8rem;
+            font-family: var(--font-head);
+            color: var(--gold);
+            font-weight: bold;
+        }
+
+        .header-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-info {
+            font-size: 0.95rem;
+        }
+
+        .user-info strong {
+            color: var(--gold);
+        }
+
+        .logout-btn {
+            padding: 0.6rem 1.2rem;
+            background: var(--gold);
+            color: var(--coal);
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 196, 0, 0.3);
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--white);
+            border-right: 1px solid var(--line);
+            padding-top: 80px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-nav li {
+            border-bottom: 1px solid var(--line);
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .sidebar-nav a:hover {
+            background: var(--gold-soft);
+            padding-left: 2rem;
+        }
+
+        .sidebar-nav a.active {
+            background: var(--gold-soft);
+            color: var(--coal);
+            font-weight: 600;
+            border-left: 4px solid var(--gold);
+            padding-left: 1.5rem;
+        }
+
+        .sidebar-nav i {
+            font-size: 1.1rem;
+            color: var(--gold);
+        }
+
+        .main-content {
+            margin-left: 250px;
+            margin-top: 70px;
+            flex: 1;
+            padding: 2rem;
+            background: var(--soft);
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .section {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--line);
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            font-family: var(--font-display);
+            color: var(--coal);
+            margin: 0;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--coal) 0%, var(--ink) 100%);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-danger {
+            background: var(--red);
+            color: var(--white);
+        }
+
+        .btn-danger:hover {
+            opacity: 0.8;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--soft);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            border-color: var(--gold);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: var(--coal);
+        }
+
+        .card-text {
+            color: var(--muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            border-left: 4px solid var(--gold);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--gold);
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            font-size: 1.6rem;
+            font-family: var(--font-display);
+            color: var(--coal);
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--line);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid var(--line);
+            border-radius: 6px;
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            color: var(--text);
+            background: var(--soft);
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: var(--white);
+            box-shadow: 0 0 0 3px var(--gold-soft);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--line);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 2px solid var(--line);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alert-success {
+            background: rgba(76, 175, 80, 0.1);
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+
+        .alert-danger {
+            background: rgba(200, 16, 46, 0.1);
+            color: var(--red);
+            border-left: 4px solid var(--red);
+        }
+
+        .stars {
+            color: var(--gold);
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        thead {
+            background: var(--soft);
+            border-bottom: 2px solid var(--line);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--line);
+        }
+
+        tr:hover {
+            background: var(--gold-soft);
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                padding-top: 0;
+                border-right: none;
+                border-bottom: 1px solid var(--line);
+                display: flex;
+                overflow-y: visible;
+                position: relative;
+            }
+
+            .sidebar-nav {
+                display: flex;
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .sidebar-nav li {
+                border-bottom: none;
+                border-right: 1px solid var(--line);
+                flex: 1;
+                min-width: 150px;
+            }
+
+            .sidebar-nav a {
+                flex-direction: column;
+                padding: 0.8rem 1rem;
+                font-size: 0.85rem;
+                justify-content: center;
+                text-align: center;
+            }
+
+            .main-content {
+                margin-left: 0;
+                margin-top: 0;
+                padding: 1.5rem 1rem;
+            }
+
+            .section {
+                padding: 1.5rem 1rem;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+
+            .header-user {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 1rem;
+            }
+
+            .header-logo {
+                font-size: 1.3rem;
+            }
+
+            .sidebar-nav a {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.75rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .section {
+                padding: 1rem;
+            }
+
+            .section-header h2 {
+                font-size: 1.3rem;
+            }
+
+            .modal {
+                width: 95%;
+                padding: 1.5rem;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 0.6rem;
+            }
+
+            .btn-small {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-wrapper">
+        <header>
+            <a href="#" class="header-brand">
+                <span class="header-logo">DV</span>
+                <span class="header-title">Admin Dashboard</span>
+            </a>
+            <div class="header-user">
+                <div class="user-info">Welcome, <strong id="adminUsername">Admin</strong></div>
+                <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </header>
+
+        <nav class="sidebar">
+            <ul class="sidebar-nav">
+                <li><a href="#" data-tab="dashboard" class="nav-link active">
+                    <i class="fas fa-chart-line"></i> Dashboard
+                </a></li>
+                <li><a href="#" data-tab="projects" class="nav-link">
+                    <i class="fas fa-building"></i> Projects
+                </a></li>
+                <li><a href="#" data-tab="testimonials" class="nav-link">
+                    <i class="fas fa-quote-left"></i> Testimonials
+                </a></li>
+                <li><a href="#" data-tab="messages" class="nav-link">
+                    <i class="fas fa-envelope"></i> Messages
+                </a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <!-- DASHBOARD -->
+            <section id="dashboard" class="content-section active">
+                <div class="section">
+                    <h2 style="font-size: 2rem; margin-bottom: 2rem; font-family: var(--font-display);">Dashboard Overview</h2>
+                    <div class="grid-container">
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalProjects">0</div>
+                            <div class="stat-label">Total Projects</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="ongoingProjects">0</div>
+                            <div class="stat-label">Ongoing Projects</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="completedProjects">0</div>
+                            <div class="stat-label">Completed Projects</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalTestimonials">0</div>
+                            <div class="stat-label">Testimonials</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalMessages">0</div>
+                            <div class="stat-label">Messages</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PROJECTS -->
+            <section id="projects" class="content-section">
+                <div class="section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-building" style="margin-right: 1rem; color: var(--gold);"></i>Manage Projects</h2>
+                        <button class="btn btn-primary" id="addProjectBtn">
+                            <i class="fas fa-plus"></i> Add Project
+                        </button>
+                    </div>
+                    <div id="projectsList" class="grid-container"></div>
+                </div>
+            </section>
+
+            <!-- TESTIMONIALS -->
+            <section id="testimonials" class="content-section">
+                <div class="section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-quote-left" style="margin-right: 1rem; color: var(--gold);"></i>Manage Testimonials</h2>
+                        <button class="btn btn-primary" id="addTestimonialBtn">
+                            <i class="fas fa-plus"></i> Add Testimonial
+                        </button>
+                    </div>
+                    <div id="testimonialsList" class="grid-container"></div>
+                </div>
+            </section>
+
+            <!-- MESSAGES -->
+            <section id="messages" class="content-section">
+                <div class="section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-envelope" style="margin-right: 1rem; color: var(--gold);"></i>Customer Messages</h2>
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="messagesTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Message</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="messagesBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- PROJECT MODAL -->
+    <div class="modal-overlay" id="projectModal">
+        <div class="modal">
+            <h2 class="modal-header" id="projectModalTitle">Add Project</h2>
+            <form id="projectForm" autocomplete="off">
+                <input type="hidden" id="projectId">
+                <div class="form-group">
+                    <label for="projectTitle">Project Title</label>
+                    <input type="text" id="projectTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="projectDescription">Description</label>
+                    <textarea id="projectDescription" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="projectCategory">Category</label>
+                    <select id="projectCategory" required>
+                        <option value="">Select Category</option>
+                        <option value="Residential">Residential</option>
+                        <option value="Commercial">Commercial</option>
+                        <option value="Premium">Premium</option>
+                        <option value="Luxury">Luxury</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="projectStatus">Status</label>
+                    <select id="projectStatus" required>
+                        <option value="ongoing">Ongoing</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="projectLocation">Location</label>
+                    <input type="text" id="projectLocation" required>
+                </div>
+                <div class="form-group">
+                    <label for="projectYear">Year</label>
+                    <input type="number" id="projectYear">
+                </div>
+                <div class="form-group">
+                    <label>Project Image</label>
+                    <div style="margin-top: 10px;">
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px;">
+                            <button type="button" class="image-tab-btn active" onclick="switchImageTab('default')" style="flex: 1; padding: 8px; background: transparent; border: none; cursor: pointer; font-size: 0.9rem; font-weight: 600; color: #686868; border-bottom: 3px solid transparent; margin-bottom: -10px;">📸 Select Default</button>
+                            <button type="button" class="image-tab-btn" onclick="switchImageTab('upload')" style="flex: 1; padding: 8px; background: transparent; border: none; cursor: pointer; font-size: 0.9rem; font-weight: 600; color: #686868; border-bottom: 3px solid transparent; margin-bottom: -10px;">⬆️ Upload File</button>
+                            <button type="button" class="image-tab-btn" onclick="switchImageTab('url')" style="flex: 1; padding: 8px; background: transparent; border: none; cursor: pointer; font-size: 0.9rem; font-weight: 600; color: #686868; border-bottom: 3px solid transparent; margin-bottom: -10px;">🔗 URL</button>
+                        </div>
+                        
+                        <!-- Default Images Tab -->
+                        <div id="defaultImageTab" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
+                            <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=300&h=300&fit=crop" onclick="selectDefaultImage(this)" style="cursor: pointer; border-radius: 8px; border: 3px solid transparent; width: 100%; aspect-ratio: 1; object-fit: cover; transition: all 0.2s;" class="default-img" alt="Image 1">
+                            <img src="https://images.unsplash.com/photo-1512207736139-6c3ee1510e8b?w=300&h=300&fit=crop" onclick="selectDefaultImage(this)" style="cursor: pointer; border-radius: 8px; border: 3px solid transparent; width: 100%; aspect-ratio: 1; object-fit: cover; transition: all 0.2s;" class="default-img" alt="Image 2">
+                            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=300&h=300&fit=crop" onclick="selectDefaultImage(this)" style="cursor: pointer; border-radius: 8px; border: 3px solid transparent; width: 100%; aspect-ratio: 1; object-fit: cover; transition: all 0.2s;" class="default-img" alt="Image 3">
+                            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=300&h=300&fit=crop" onclick="selectDefaultImage(this)" style="cursor: pointer; border-radius: 8px; border: 3px solid transparent; width: 100%; aspect-ratio: 1; object-fit: cover; transition: all 0.2s;" class="default-img" alt="Image 4">
+                            <img src="https://images.unsplash.com/photo-1560185008-b033106af5c3?w=300&h=300&fit=crop" onclick="selectDefaultImage(this)" style="cursor: pointer; border-radius: 8px; border: 3px solid transparent; width: 100%; aspect-ratio: 1; object-fit: cover; transition: all 0.2s;" class="default-img" alt="Image 5">
+                            <img src="https://images.unsplash.com/photo-1494526585095-c41746248156?w=300&h=300&fit=crop" onclick="selectDefaultImage(this)" style="cursor: pointer; border-radius: 8px; border: 3px solid transparent; width: 100%; aspect-ratio: 1; object-fit: cover; transition: all 0.2s;" class="default-img" alt="Image 6">
+                        </div>
+                        
+                        <!-- Upload File Tab -->
+                        <div id="uploadImageTab" style="display: none;">
+                            <input type="file" id="projectImageFile" accept="image/*" onchange="handleImageUpload(this)" style="padding: 8px; border: 2px dashed #d0d0d0; border-radius: 6px; width: 100%;">
+                            <p style="font-size: 0.85rem; color: #999; margin-top: 8px;">Supported: JPG, PNG, GIF, WebP (Max 5MB)</p>
+                        </div>
+                        
+                        <!-- URL Tab -->
+                        <div id="urlImageTab" style="display: none;">
+                            <input type="url" id="projectImage" placeholder="https://example.com/image.jpg" style="width: 100%; padding: 8px; border: 1px solid #d0d0d0; border-radius: 6px;">
+                        </div>
+                        
+                        <!-- Image Preview -->
+                        <div id="imagePreview" style="display: none; margin-top: 15px;">
+                            <p style="font-size: 0.85rem; color: #666; margin-bottom: 8px;">Preview:</p>
+                            <img id="previewImage" src="" style="width: 100%; max-width: 300px; border-radius: 8px; border: 1px solid #e0e0e0;">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('projectModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TESTIMONIAL MODAL -->
+    <div class="modal-overlay" id="testimonialModal">
+        <div class="modal">
+            <h2 class="modal-header" id="testimonialModalTitle">Add Testimonial</h2>
+            <form id="testimonialForm" autocomplete="off">
+                <input type="hidden" id="testimonialId">
+                <div class="form-group">
+                    <label for="testimonialAuthor">Customer Name</label>
+                    <input type="text" id="testimonialAuthor" required>
+                </div>
+                <div class="form-group">
+                    <label for="testimonialAvatar">Avatar (Single Letter)</label>
+                    <input type="text" id="testimonialAvatar" maxlength="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="testimonialQuote">Testimonial</label>
+                    <textarea id="testimonialQuote" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="testimonialRating">Rating</label>
+                    <select id="testimonialRating" required>
+                        <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
+                        <option value="4">⭐⭐⭐⭐ 4 Stars</option>
+                        <option value="3">⭐⭐⭐ 3 Stars</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('testimonialModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const state = {
+            projects: [],
+            testimonials: [],
+            messages: [],
+            editingProject: null,
+            editingTestimonial: null
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            setupEventListeners();
+            loadAllData();
+        });
+
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/admin/status');
+                const data = await response.json();
+                if (!data.authenticated) {
+                    window.location.href = '/admin_login.html';
+                } else {
+                    document.getElementById('adminUsername').textContent = data.username || 'Admin';
+                }
+            } catch (error) {
+                window.location.href = '/admin-login.html';
+            }
+        }
+
+        function setupEventListeners() {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    switchTab(link.dataset.tab);
+                });
+            });
+
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+            document.getElementById('projectForm').addEventListener('submit', saveProject);
+            document.getElementById('addProjectBtn').addEventListener('click', () => openProjectModal());
+            document.getElementById('testimonialForm').addEventListener('submit', saveTestimonial);
+            document.getElementById('addTestimonialBtn').addEventListener('click', () => openTestimonialModal());
+
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal-overlay')) {
+                    e.target.classList.remove('show');
+                }
+            });
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        function openProjectModal(projectId = null) {
+            document.getElementById('projectForm').reset();
+            if (projectId) {
+                const project = state.projects.find(p => p.id === projectId);
+                if (project) {
+                    state.editingProject = projectId;
+                    document.getElementById('projectModalTitle').textContent = 'Edit Project';
+                    document.getElementById('projectId').value = project.id;
+                    document.getElementById('projectTitle').value = project.title;
+                    document.getElementById('projectDescription').value = project.description;
+                    document.getElementById('projectCategory').value = project.category;
+                    document.getElementById('projectStatus').value = project.status;
+                    document.getElementById('projectLocation').value = project.location;
+                    document.getElementById('projectYear').value = project.year;
+                    document.getElementById('projectImage').value = project.image;
+                }
+            } else {
+                state.editingProject = null;
+                document.getElementById('projectModalTitle').textContent = 'Add Project';
+                document.getElementById('projectId').value = '';
+            }
+            openModal('projectModal');
+        }
+
+        function openTestimonialModal(testimonialId = null) {
+            document.getElementById('testimonialForm').reset();
+            if (testimonialId) {
+                const testimonial = state.testimonials.find(t => t.id === testimonialId);
+                if (testimonial) {
+                    state.editingTestimonial = testimonialId;
+                    document.getElementById('testimonialModalTitle').textContent = 'Edit Testimonial';
+                    document.getElementById('testimonialId').value = testimonial.id;
+                    document.getElementById('testimonialAuthor').value = testimonial.author;
+                    document.getElementById('testimonialAvatar').value = testimonial.avatar;
+                    document.getElementById('testimonialQuote').value = testimonial.quote;
+                    document.getElementById('testimonialRating').value = testimonial.rating;
+                }
+            } else {
+                state.editingTestimonial = null;
+                document.getElementById('testimonialModalTitle').textContent = 'Add Testimonial';
+                document.getElementById('testimonialId').value = '';
+            }
+            openModal('testimonialModal');
+        }
+
+        async function loadAllData() {
+            try {
+                const [projects, testimonials, messages] = await Promise.all([
+                    fetch('/api/projects').then(r => r.json()),
+                    fetch('/api/testimonials').then(r => r.json()),
+                    fetch('/api/messages').then(r => r.json())
+                ]);
+                state.projects = projects;
+                state.testimonials = testimonials;
+                state.messages = messages;
+                updateDashboard();
+                renderProjects();
+                renderTestimonials();
+                renderMessages();
+            } catch (error) {
+                showAlert('Error loading data', 'danger');
+            }
+        }
+
+        function updateDashboard() {
+            const ongoing = state.projects.filter(p => p.status === 'ongoing').length;
+            const completed = state.projects.filter(p => p.status === 'completed').length;
+            document.getElementById('totalProjects').textContent = state.projects.length;
+            document.getElementById('ongoingProjects').textContent = ongoing;
+            document.getElementById('completedProjects').textContent = completed;
+            document.getElementById('totalTestimonials').textContent = state.testimonials.length;
+            document.getElementById('totalMessages').textContent = state.messages.length;
+        }
+
+        async function saveProject(e) {
+            e.preventDefault();
+            const projectId = document.getElementById('projectId').value;
+            const projectData = {
+                title: document.getElementById('projectTitle').value,
+                description: document.getElementById('projectDescription').value,
+                category: document.getElementById('projectCategory').value,
+                status: document.getElementById('projectStatus').value,
+                location: document.getElementById('projectLocation').value,
+                year: document.getElementById('projectYear').value,
+                image: document.getElementById('projectImage').value,
+                date_created: new Date().toISOString().split('T')[0]
+            };
+
+            try {
+                const url = projectId ? `/api/projects/${projectId}` : '/api/projects';
+                const method = projectId ? 'PUT' : 'POST';
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(projectData)
+                });
+
+                if (response.ok) {
+                    showAlert('Project saved!', 'success');
+                    closeModal('projectModal');
+                    loadAllData();
+                } else {
+                    throw new Error('Save failed');
+                }
+            } catch (error) {
+                showAlert(error.message, 'danger');
+            }
+        }
+
+        async function deleteProject(id) {
+            if (!confirm('Delete this project?')) return;
+            try {
+                const response = await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    showAlert('Project deleted!', 'success');
+                    loadAllData();
+                }
+            } catch (error) {
+                showAlert(error.message, 'danger');
+            }
+        }
+
+        function renderProjects() {
+            const container = document.getElementById('projectsList');
+            if (state.projects.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--muted);">No projects yet.</p>';
+                return;
+            }
+            container.innerHTML = state.projects.map(p => `
+                <div class="card">
+                    ${p.image ? `<img src="${p.image}" alt="${p.title}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 6px; margin-bottom: 1rem;">` : ''}
+                    <div class="card-title">${p.title}</div>
+                    <div class="card-text">${p.description.substring(0, 100)}...</div>
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        <span style="background: var(--gold-soft); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; color: var(--coal); font-weight: 600;">${p.category}</span>
+                        <span style="background: ${p.status === 'ongoing' ? 'rgba(76, 175, 80, 0.2)' : 'rgba(100, 100, 100, 0.2)'}; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; color: ${p.status === 'ongoing' ? '#2e7d32' : '#555'}; font-weight: 600;">${p.status}</span>
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; padding-top: 1rem; border-top: 1px solid var(--line);">
+                        <div><strong>Location:</strong> ${p.location}</div>
+                        <div><strong>Year:</strong> ${p.year}</div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-small btn-secondary" onclick="openProjectModal(${p.id})"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn btn-small btn-danger" onclick="deleteProject(${p.id})"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function saveTestimonial(e) {
+            e.preventDefault();
+            const testimonialId = document.getElementById('testimonialId').value;
+            const testimonialData = {
+                author: document.getElementById('testimonialAuthor').value,
+                avatar: document.getElementById('testimonialAvatar').value.toUpperCase(),
+                quote: document.getElementById('testimonialQuote').value,
+                rating: parseInt(document.getElementById('testimonialRating').value),
+                date_created: new Date().toISOString().split('T')[0]
+            };
+
+            try {
+                const url = testimonialId ? `/api/testimonials/${testimonialId}` : '/api/testimonials';
+                const method = testimonialId ? 'PUT' : 'POST';
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(testimonialData)
+                });
+
+                if (response.ok) {
+                    showAlert('Testimonial saved!', 'success');
+                    closeModal('testimonialModal');
+                    loadAllData();
+                }
+            } catch (error) {
+                showAlert(error.message, 'danger');
+            }
+        }
+
+        async function deleteTestimonial(id) {
+            if (!confirm('Delete this testimonial?')) return;
+            try {
+                const response = await fetch(`/api/testimonials/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    showAlert('Testimonial deleted!', 'success');
+                    loadAllData();
+                }
+            } catch (error) {
+                showAlert(error.message, 'danger');
+            }
+        }
+
+        function renderTestimonials() {
+            const container = document.getElementById('testimonialsList');
+            if (state.testimonials.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--muted);">No testimonials yet.</p>';
+                return;
+            }
+            container.innerHTML = state.testimonials.map(t => `
+                <div class="card">
+                    <div class="stars" style="margin-bottom: 1rem;">
+                        ${'⭐'.repeat(t.rating)}
+                    </div>
+                    <div class="card-text" style="font-style: italic; margin-bottom: 1rem;">
+                        "${t.quote.substring(0, 150)}..."
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--gold-soft); display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--coal);">
+                            ${t.avatar}
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--coal);">${t.author}</div>
+                            <div style="font-size: 0.85rem; color: var(--muted);">${t.date_created}</div>
+                        </div>
+                    </div>
+                    <div class="card-actions" style="margin-top: 1rem;">
+                        <button class="btn btn-small btn-secondary" onclick="openTestimonialModal(${t.id})"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn btn-small btn-danger" onclick="deleteTestimonial(${t.id})"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function deleteMessage(id) {
+            if (!confirm('Delete this message?')) return;
+            try {
+                const response = await fetch(`/api/messages/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    showAlert('Message deleted!', 'success');
+                    loadAllData();
+                }
+            } catch (error) {
+                showAlert(error.message, 'danger');
+            }
+        }
+
+        function renderMessages() {
+            const tbody = document.getElementById('messagesBody');
+            if (state.messages.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--muted); padding: 2rem;">No messages yet.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = state.messages.map(m => `
+                <tr>
+                    <td>${m.name}</td>
+                    <td>${m.email}</td>
+                    <td>${m.phone}</td>
+                    <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${m.message.substring(0, 50)}...</td>
+                    <td>${m.date_created}</td>
+                    <td><button class="btn btn-small btn-danger" onclick="deleteMessage(${m.id})"><i class="fas fa-trash"></i> Delete</button></td>
+                </tr>
+            `).join('');
+        }
+
+        async function logout() {
+            try {
+                await fetch('/api/admin/logout', { method: 'POST' });
+                window.location.href = '/admin_login.html';
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> <span>${message}</span>`;
+            document.querySelector('.main-content').insertBefore(alertDiv, document.querySelector('.main-content').firstChild);
+            setTimeout(() => alertDiv.remove(), 4000);
+        }
+
+        // Image tab switching functions
+        function switchImageTab(tabName) {
+            // Hide all tabs
+            document.getElementById('defaultImageTab').style.display = 'none';
+            document.getElementById('uploadImageTab').style.display = 'none';
+            document.getElementById('urlImageTab').style.display = 'none';
+            
+            // Deactivate all tab buttons
+            document.querySelectorAll('.image-tab-btn').forEach(btn => {
+                btn.style.borderBottomColor = 'transparent';
+                btn.style.color = '#686868';
+            });
+            
+            // Show selected tab and activate button
+            if (tabName === 'default') {
+                document.getElementById('defaultImageTab').style.display = 'grid';
+                document.querySelectorAll('.image-tab-btn')[0].style.borderBottomColor = '#f5c400';
+                document.querySelectorAll('.image-tab-btn')[0].style.color = '#171717';
+            } else if (tabName === 'upload') {
+                document.getElementById('uploadImageTab').style.display = 'block';
+                document.querySelectorAll('.image-tab-btn')[1].style.borderBottomColor = '#f5c400';
+                document.querySelectorAll('.image-tab-btn')[1].style.color = '#171717';
+            } else if (tabName === 'url') {
+                document.getElementById('urlImageTab').style.display = 'block';
+                document.querySelectorAll('.image-tab-btn')[2].style.borderBottomColor = '#f5c400';
+                document.querySelectorAll('.image-tab-btn')[2].style.color = '#171717';
+            }
+        }
+
+        // Select default image
+        function selectDefaultImage(imgElement) {
+            const imageUrl = imgElement.src;
+            document.getElementById('projectImage').value = imageUrl;
+            
+            // Show preview
+            const preview = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImage');
+            previewImg.src = imageUrl;
+            preview.style.display = 'block';
+            
+            // Highlight selected image
+            document.querySelectorAll('.default-img').forEach(img => {
+                img.style.borderColor = 'transparent';
+            });
+            imgElement.style.borderColor = '#f5c400';
+        }
+
+        // Handle file upload
+        function handleImageUpload(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                
+                // Check file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    showAlert('File size must be less than 5MB', 'danger');
+                    input.value = '';
+                    return;
+                }
+                
+                // Convert file to data URL
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const dataUrl = e.target.result;
+                    document.getElementById('projectImage').value = dataUrl;
+                    
+                    // Show preview
+                    const preview = document.getElementById('imagePreview');
+                    const previewImg = document.getElementById('previewImage');
+                    previewImg.src = dataUrl;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+</body>
+
+</html>

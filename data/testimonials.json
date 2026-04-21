@@ -1,38 +1,18 @@
 [
-    {
-        "id": 1,
-        "name": "Suresh Kumar",
-        "company": "Villa Owner, Adyar",
-        "text": "DV Dream Homes turned our vision into a stunning villa with remarkable attention to detail. Every milestone was transparent and on schedule.",
-        "rating": 5,
-        "image": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face",
-        "date_created": "2026-04-15"
-    },
-    {
-        "id": 2,
-        "name": "Priya Raman",
-        "company": "Apartment Owner, Anna Nagar",
-        "text": "From design discussions to handover, the DV team was responsive, precise, and deeply professional. We love our new home.",
-        "rating": 5,
-        "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face",
-        "date_created": "2026-04-15"
-    },
-    {
-        "id": 3,
-        "name": "Ravi Menon",
-        "company": "CEO, Meridian Corp",
-        "text": "Our commercial headquarters was delivered exactly as committed. Build quality, safety protocols, and finish were all top-class.",
-        "rating": 5,
-        "image": "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop&crop=face",
-        "date_created": "2026-04-15"
-    },
-    {
-        "id": 4,
-        "name": "Anjali Das",
-        "company": "NRI Client, Besant Nagar",
-        "text": "I monitored progress remotely through weekly updates and live walkthroughs. The process was smooth and completely trustworthy.",
-        "rating": 5,
-        "image": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face",
-        "date_created": "2026-04-15"
-    }
+  {
+    "id": 1,
+    "author": "Mr. Shyam Sundar",
+    "quote": "My decision to purchase a flat with your team was strongly influenced by glowing recommendations from trusted people in and around the locality. Your extensive experience in constructing high-quality homes further reinforced my confidence, making this project a proud milestone in our lives. We are especially impressed by your attention to detail, commitment to craftsmanship, and your willingness to accommodate customizations to suit our requirements.",
+    "rating": 5,
+    "avatar": "S",
+    "date_created": "2024-01-15"
+  },
+  {
+    "id": 2,
+    "author": "Mr. Kothandaraman",
+    "quote": "I personally witnessed the use of high-quality chamber bricks and ready-mix concrete at the site, which speaks volumes about the commitment to construction excellence. The entire management and staff at DV have been exceptionally friendly and cooperative throughout the process, making the journey smooth and reassuring.",
+    "rating": 5,
+    "avatar": "K",
+    "date_created": "2024-01-20"
+  }
 ]

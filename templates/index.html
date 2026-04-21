@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -35,7 +35,7 @@
       </button>
       <nav class="nav-menu" data-nav-menu aria-label="Primary navigation">
         <a href="index.html" class="active home-link" aria-label="Home">
-          <img src="homelogo.png" alt="Home" class="home-logo">
+          <img src="static/images/homelogo.png" alt="Home" class="home-logo">
         </a>
         <a href="team-dv.html">Team DV</a>
         <a href="why-dv.html">Why DV</a>
@@ -122,7 +122,7 @@
             </ul>
           </article>
 
-          <article class="story-step" data-story-step data-index="02" data-image="static/images/future-building-construction-engineering-project-600nw-1550278412.webp" data-title="Engineering the promise" data-caption="Strong construction standards turn design intent into durable homes.">
+          <article class="story-step" data-story-step data-index="02" data-image="static/images/photo-1589939705384-5185137a7f0f.avif" data-title="Engineering the promise" data-caption="Strong construction standards turn design intent into durable homes.">
             <p class="chapter-label">Chapter 02</p>
             <h3>Quality is treated as a site habit, not a finishing touch.</h3>
             <p>From material choices to supervision, construction discipline sits at the center of the DV process. The aim is a home that looks refined and performs reliably over time.</p>
@@ -133,7 +133,7 @@
             </ul>
           </article>
 
-          <article class="story-step" data-story-step data-index="03" data-image="static/images/abt.jpeg" data-title="Transparent progress" data-caption="Owners stay close to the journey through clear communication and dependable milestones.">
+          <article class="story-step" data-story-step data-index="03" data-image="static/images/photo-1563166423-482a8c14b2d6.avif" data-title="Transparent progress" data-caption="Owners stay close to the journey through clear communication and dependable milestones.">
             <p class="chapter-label">Chapter 03</p>
             <h3>Confidence grows when communication stays clear.</h3>
             <p>DV keeps the customer journey calm and accountable with a transparent approach to progress, queries, appointments, and delivery expectations.</p>
@@ -313,30 +313,37 @@
           <h2>Confidence from the people who watched the work happen.</h2>
           <p>Families choose DV for homes that feel trustworthy before, during, and after construction.</p>
         </div>
-        <div class="testimonial-grid">
-          <article class="testimonial-card reveal">
-            <div class="stars" aria-label="Five star rating">*****</div>
-            <blockquote>My decision to purchase a flat with your team was strongly influenced by glowing recommendations from trusted people in and around the locality. Your extensive experience in constructing high-quality homes further reinforced my confidence, making this project a proud milestone
-in our lives.
-We are especially impressed by your attention to detail, commitment to craftsmanship, and your willingness to accommodate customizations to suit our requirements. We are proud to say that you are playing a key role in turning our dream of owning a home into reality.
-It is truly an honour to have our dream home built by your team, and we eagerly look forward to its completion.</blockquote>
-            <div class="testimonial-author">
-              <span class="avatar">S</span>
-              <span>Mr. Shyam Sundar</span>
-            </div>
-          </article>
-          <article class="testimonial-card reveal">
-            <div class="stars" aria-label="Five star rating">*****</div>
-            <blockquote>I personally witnessed the use of high-quality chamber bricks and ready-mix concrete at the site, which speaks volumes about the commitment to construction excellence. there is understandably a high level of expectation among the buyers-and I am confident that the team will exceed those expectations.
-The entire management and staff at DV have been exceptionally friendly and cooperative throughout the process, making the journey smooth and reassuring.</blockquote>
-            <div class="testimonial-author">
-              <span class="avatar">S</span>
-              <span>Mr.Kothandaraman</span>
-            </div>
-          </article>
+        <div class="testimonial-grid" id="testimonialsGrid">
+          <!-- Loaded dynamically from API -->
         </div>
       </div>
     </section>
+
+    <script>
+      // Fetch and display testimonials
+      fetch('/api/testimonials', { cache: 'no-store' })
+        .then(response => response.ok ? response.json() : [])
+        .then(testimonials => {
+          const grid = document.getElementById('testimonialsGrid');
+          if (testimonials.length === 0) {
+            grid.innerHTML = '<p style="text-align: center; color: #999; grid-column: 1/-1;">No testimonials available yet.</p>';
+            return;
+          }
+          grid.innerHTML = testimonials.map(t => `
+            <article class="testimonial-card reveal">
+              <div class="stars" aria-label="${t.rating} star rating">${'*'.repeat(t.rating)}</div>
+              <blockquote>${t.quote}</blockquote>
+              <div class="testimonial-author">
+                <span class="avatar">${t.avatar}</span>
+                <span>${t.author}</span>
+              </div>
+            </article>
+          `).join('');
+        })
+        .catch(() => {
+          document.getElementById('testimonialsGrid').innerHTML = '<p style="text-align: center; color: #999; grid-column: 1/-1;">Unable to load testimonials.</p>';
+        });
+    </script>
 
     <section class="cta-band">
       <div class="container cta-inner">
