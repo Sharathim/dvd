@@ -79,14 +79,19 @@ def api_projects():
     return jsonify(_read_json_array("projects.json"))
 
 
+@app.route("/api/completed-projects")
+def api_completed_projects():
+    return jsonify(_read_json_array("completed_projects.json"))
+
+
+@app.route("/api/ongoing-projects")
+def api_ongoing_projects():
+    return jsonify(_read_json_array("ongoing_projects.json"))
+
+
 @app.route("/api/testimonials")
 def api_testimonials():
     return jsonify(_read_json_array("testimonials.json"))
-
-
-@app.route("/api/messages")
-def api_messages():
-    return jsonify(_read_json_array("messages.json"))
 
 
 @app.route("/api/admin")
@@ -194,6 +199,130 @@ def project_detail(project_id):
         return jsonify({"ok": True}), 200
 
 
+# ===== COMPLETED PROJECTS CRUD =====
+@app.route("/api/completed-projects", methods=["GET", "POST"])
+def completed_projects_endpoint():
+    if request.method == "POST":
+        _require_admin(lambda: None)()
+        data = request.get_json()
+        completed_projects = _read_json_array("completed_projects.json")
+
+        new_id = max([project.get("id", 0) for project in completed_projects], default=0) + 1
+
+        new_completed_project = {
+            "id": new_id,
+            "title": data.get("title", ""),
+            "description": data.get("description", ""),
+            "project_type": data.get("project_type", "Completed Residence"),
+            "location": data.get("location", ""),
+            "completed_in": data.get("completed_in", ""),
+            "units": data.get("units", ""),
+            "built_up_area": data.get("built_up_area", ""),
+            "image": data.get("image", ""),
+            "date_created": data.get("date_created", "")
+        }
+
+        completed_projects.append(new_completed_project)
+        _write_json_array("completed_projects.json", completed_projects)
+
+        return jsonify(new_completed_project), 201
+
+    return jsonify(_read_json_array("completed_projects.json")), 200
+
+
+@app.route("/api/completed-projects/<int:project_id>", methods=["PUT", "DELETE"])
+def completed_project_detail(project_id):
+    _require_admin(lambda: None)()
+    completed_projects = _read_json_array("completed_projects.json")
+
+    project_index = next((i for i, project in enumerate(completed_projects) if project.get("id") == project_id), None)
+
+    if project_index is None:
+        abort(404)
+
+    if request.method == "PUT":
+        data = request.get_json()
+        project = completed_projects[project_index]
+        project.update({
+            "title": data.get("title", project.get("title")),
+            "description": data.get("description", project.get("description")),
+            "project_type": data.get("project_type", project.get("project_type")),
+            "location": data.get("location", project.get("location")),
+            "completed_in": data.get("completed_in", project.get("completed_in")),
+            "units": data.get("units", project.get("units")),
+            "built_up_area": data.get("built_up_area", project.get("built_up_area")),
+            "image": data.get("image", project.get("image"))
+        })
+        _write_json_array("completed_projects.json", completed_projects)
+        return jsonify(project), 200
+
+    elif request.method == "DELETE":
+        completed_projects.pop(project_index)
+        _write_json_array("completed_projects.json", completed_projects)
+        return jsonify({"ok": True}), 200
+
+
+# ===== ONGOING PROJECTS CRUD =====
+@app.route("/api/ongoing-projects", methods=["GET", "POST"])
+def ongoing_projects_endpoint():
+    if request.method == "POST":
+        _require_admin(lambda: None)()
+        data = request.get_json()
+        ongoing_projects = _read_json_array("ongoing_projects.json")
+
+        new_id = max([project.get("id", 0) for project in ongoing_projects], default=0) + 1
+
+        new_ongoing_project = {
+            "id": new_id,
+            "tag": data.get("tag", "Ongoing"),
+            "title": data.get("title", ""),
+            "description": data.get("description", ""),
+            "meta_one": data.get("meta_one", ""),
+            "meta_two": data.get("meta_two", ""),
+            "image": data.get("image", ""),
+            "link": data.get("link", ""),
+            "date_created": data.get("date_created", "")
+        }
+
+        ongoing_projects.append(new_ongoing_project)
+        _write_json_array("ongoing_projects.json", ongoing_projects)
+
+        return jsonify(new_ongoing_project), 201
+
+    return jsonify(_read_json_array("ongoing_projects.json")), 200
+
+
+@app.route("/api/ongoing-projects/<int:project_id>", methods=["PUT", "DELETE"])
+def ongoing_project_detail(project_id):
+    _require_admin(lambda: None)()
+    ongoing_projects = _read_json_array("ongoing_projects.json")
+
+    project_index = next((i for i, project in enumerate(ongoing_projects) if project.get("id") == project_id), None)
+
+    if project_index is None:
+        abort(404)
+
+    if request.method == "PUT":
+        data = request.get_json()
+        project = ongoing_projects[project_index]
+        project.update({
+            "tag": data.get("tag", project.get("tag")),
+            "title": data.get("title", project.get("title")),
+            "description": data.get("description", project.get("description")),
+            "meta_one": data.get("meta_one", project.get("meta_one")),
+            "meta_two": data.get("meta_two", project.get("meta_two")),
+            "image": data.get("image", project.get("image")),
+            "link": data.get("link", project.get("link"))
+        })
+        _write_json_array("ongoing_projects.json", ongoing_projects)
+        return jsonify(project), 200
+
+    elif request.method == "DELETE":
+        ongoing_projects.pop(project_index)
+        _write_json_array("ongoing_projects.json", ongoing_projects)
+        return jsonify({"ok": True}), 200
+
+
 # ===== TESTIMONIALS CRUD =====
 @app.route("/api/testimonials", methods=["GET", "POST"])
 def testimonials_endpoint():
@@ -247,49 +376,6 @@ def testimonial_detail(testimonial_id):
     elif request.method == "DELETE":
         testimonials.pop(testimonial_index)
         _write_json_array("testimonials.json", testimonials)
-        return jsonify({"ok": True}), 200
-
-
-# ===== MESSAGES CRUD =====
-@app.route("/api/messages", methods=["GET", "POST"])
-def messages_endpoint():
-    if request.method == "POST":
-        data = request.get_json()
-        messages = _read_json_array("messages.json")
-        
-        # Generate ID
-        new_id = max([m.get("id", 0) for m in messages], default=0) + 1
-        
-        new_message = {
-            "id": new_id,
-            "name": data.get("name", ""),
-            "email": data.get("email", ""),
-            "phone": data.get("phone", ""),
-            "message": data.get("message", ""),
-            "date_created": data.get("date_created", "")
-        }
-        
-        messages.append(new_message)
-        _write_json_array("messages.json", messages)
-        
-        return jsonify(new_message), 201
-    
-    return jsonify(_read_json_array("messages.json")), 200
-
-
-@app.route("/api/messages/<int:message_id>", methods=["DELETE"])
-def message_detail(message_id):
-    _require_admin(lambda: None)()
-    messages = _read_json_array("messages.json")
-    
-    message_index = next((i for i, m in enumerate(messages) if m.get("id") == message_id), None)
-    
-    if message_index is None:
-        abort(404)
-    
-    if request.method == "DELETE":
-        messages.pop(message_index)
-        _write_json_array("messages.json", messages)
         return jsonify({"ok": True}), 200
 
 

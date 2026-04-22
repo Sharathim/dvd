@@ -1,13 +1,11 @@
 const STORAGE_KEYS = {
     projects: 'dv_projects',
-    testimonials: 'dv_testimonials',
-    messages: 'dv_messages'
+    testimonials: 'dv_testimonials'
 };
 
 const LEGACY_STORAGE_KEYS = {
     projects: 'rrr_projects',
-    testimonials: 'rrr_testimonials',
-    messages: 'rrr_messages'
+    testimonials: 'rrr_testimonials'
 };
 
 const STORAGE_VERSION_KEY = 'dv_storage_version';
@@ -169,15 +167,6 @@ async function bootstrapData() {
         }
     }
 
-    if (!hasValidArrayStore(STORAGE_KEYS.messages)) {
-        try {
-            const resp = await fetch('data/messages.json');
-            const value = resp.ok ? await resp.json() : [];
-            saveStore(STORAGE_KEYS.messages, Array.isArray(value) ? value : []);
-        } catch {
-            saveStore(STORAGE_KEYS.messages, []);
-        }
-    }
 }
 
 function createProjectCardHTML(project) {
@@ -216,41 +205,6 @@ function createTestimonialCardHTML(item) {
         </div>`;
 }
 
-function createMessageCardHTML(message) {
-    const serviceRow = message.service
-        ? `<strong><i class="fas fa-cog"></i> Service:</strong> ${message.service}<br>`
-        : '';
-    const subjectRow = message.subject
-        ? `<strong><i class="fas fa-tag"></i> Subject:</strong> ${message.subject}<br>`
-        : '';
-    const emailRow = message.email
-        ? `<strong><i class="fas fa-envelope"></i> Email:</strong> ${message.email}<br>`
-        : '';
-    const phoneRow = message.phone
-        ? `<strong><i class="fas fa-phone"></i> Phone:</strong> ${message.phone}`
-        : '';
-
-    return `
-        <div class="card-title">${message.name}</div>
-        <div style="margin-bottom: 1rem;"><span class="status-badge status-${(message.status || 'New').replace(' ', '')}">${message.status || 'New'}</span></div>
-        <div class="card-details">
-            ${serviceRow}
-            ${subjectRow}
-            ${emailRow}
-            ${phoneRow}
-        </div>
-        <div class="card-message">${message.message || ''}</div>
-        <small class="card-details"><i class="fas fa-clock"></i> Received: ${(message.timestamp || '').split('T')[0] || 'Unknown'}</small>
-        <div class="card-actions">
-            <select onchange="updateMsgStatus('${message.id}', this.value)" style="flex-grow:1; padding: 0.7rem; border-radius: 10px; border: 2px solid #e1e5e9; font-family: inherit;">
-                ${['New', 'In Progress', 'Answered', 'Finished'].map(function (status) {
-        return `<option value="${status}" ${message.status === status ? 'selected' : ''}>${status}</option>`;
-    }).join('')}
-            </select>
-            <button class="btn btn-danger" onclick="confirmDelete('message', '${message.id}')"><i class="fas fa-trash"></i> Delete</button>
-        </div>`;
-}
-
 function renderProjects() {
     const list = document.getElementById('projectsList');
     if (!list) {
@@ -285,27 +239,9 @@ function renderTestimonials() {
     }).join('');
 }
 
-function renderMessages() {
-    const list = document.getElementById('messagesList');
-    if (!list) {
-        return;
-    }
-
-    const messages = loadStore(STORAGE_KEYS.messages);
-    if (!messages.length) {
-        list.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: #666;"><i class="fas fa-envelope" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i><p>No messages yet.</p></div>';
-        return;
-    }
-
-    list.innerHTML = messages.map(function (message) {
-        return `<div class="card" data-id="${message.id}">${createMessageCardHTML(message)}</div>`;
-    }).join('');
-}
-
 function renderAll() {
     renderProjects();
     renderTestimonials();
-    renderMessages();
 }
 
 function openProjectModal() {
@@ -478,22 +414,6 @@ function editTestimonial(id) {
 
 window.editTestimonial = editTestimonial;
 
-function updateMsgStatus(id, status) {
-    const messages = loadStore(STORAGE_KEYS.messages);
-    const item = messages.find(function (message) { return String(message.id) === String(id); });
-    if (!item) {
-        showToast('Message not found.', 'error');
-        return;
-    }
-
-    item.status = status;
-    saveStore(STORAGE_KEYS.messages, messages);
-    renderMessages();
-    showToast('Message status updated!', 'success');
-}
-
-window.updateMsgStatus = updateMsgStatus;
-
 function openConfirmModal(title, message, onConfirm) {
     document.getElementById('confirmTitle').textContent = title;
     document.getElementById('confirmMessage').textContent = message;
@@ -504,8 +424,7 @@ function openConfirmModal(title, message, onConfirm) {
 function confirmDelete(type, id) {
     const labels = {
         project: 'This will permanently delete this project.',
-        testimonial: 'This will permanently delete this testimonial.',
-        message: 'This will permanently delete this customer message.'
+        testimonial: 'This will permanently delete this testimonial.'
     };
 
     openConfirmModal(`Delete ${type}`, labels[type] || 'Are you sure?', function () {
@@ -519,12 +438,6 @@ function confirmDelete(type, id) {
             const testimonials = loadStore(STORAGE_KEYS.testimonials).filter(function (item) { return String(item.id) !== String(id); });
             saveStore(STORAGE_KEYS.testimonials, testimonials);
             renderTestimonials();
-        }
-
-        if (type === 'message') {
-            const messages = loadStore(STORAGE_KEYS.messages).filter(function (item) { return String(item.id) !== String(id); });
-            saveStore(STORAGE_KEYS.messages, messages);
-            renderMessages();
         }
 
         showToast(`${type} deleted successfully.`, 'success');

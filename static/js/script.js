@@ -1,7 +1,6 @@
 const STORAGE_KEYS = {
     projects: 'dv_projects',
-    testimonials: 'dv_testimonials',
-    messages: 'dv_messages'
+    testimonials: 'dv_testimonials'
 };
 
 const STORAGE_VERSION_KEY = 'dv_storage_version';
@@ -100,10 +99,6 @@ async function bootstrapData() {
         saveStore(STORAGE_KEYS.testimonials, testimonials);
     }
 
-    if (!localStorage.getItem(STORAGE_KEYS.messages)) {
-        const messages = await fetchJson('data/messages.json');
-        saveStore(STORAGE_KEYS.messages, messages);
-    }
 }
 
 function resolveImage(path, fallback) {

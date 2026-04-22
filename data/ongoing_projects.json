@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "tag": "New Launch",
+    "title": "DV Emerald",
+    "description": "A refined residential address planned for comfort, convenience, and long-term value.",
+    "meta_one": "Premium homes",
+    "meta_two": "Surapet",
+    "image": "static/images/slide1.jpg",
+    "link": "dv-emerald.html",
+    "date_created": "2026-04-22"
+  },
+  {
+    "id": 2,
+    "tag": "Ongoing",
+    "title": "DV Marina",
+    "description": "Smart residential planning with the details modern families expect every day.",
+    "meta_one": "Modern living",
+    "meta_two": "Quality build",
+    "image": "static/images/slide2.jpg",
+    "link": "dv-marina.html",
+    "date_created": "2026-04-22"
+  },
+  {
+    "id": 3,
+    "tag": "Upcoming",
+    "title": "DV Empire",
+    "description": "A future-ready development designed with strong foundations and elegant everyday spaces.",
+    "meta_one": "Upcoming",
+    "meta_two": "Family focused",
+    "image": "static/images/slide3.jpg",
+    "link": "dv-empire.html",
+    "date_created": "2026-04-22"
+  }
+]

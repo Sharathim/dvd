@@ -601,14 +601,14 @@
                 <li><a href="#" data-tab="dashboard" class="nav-link active">
                     <i class="fas fa-chart-line"></i> Dashboard
                 </a></li>
-                <li><a href="#" data-tab="projects" class="nav-link">
-                    <i class="fas fa-building"></i> Projects
+                <li><a href="#" data-tab="ongoing-projects" class="nav-link">
+                    <i class="fas fa-city"></i> Ongoing Projects
+                </a></li>
+                <li><a href="#" data-tab="completed-projects" class="nav-link">
+                    <i class="fas fa-building"></i> Completed Projects
                 </a></li>
                 <li><a href="#" data-tab="testimonials" class="nav-link">
                     <i class="fas fa-quote-left"></i> Testimonials
-                </a></li>
-                <li><a href="#" data-tab="messages" class="nav-link">
-                    <i class="fas fa-envelope"></i> Messages
                 </a></li>
             </ul>
         </nav>
@@ -619,10 +619,6 @@
                 <div class="section">
                     <h2 style="font-size: 2rem; margin-bottom: 2rem; font-family: var(--font-display);">Dashboard Overview</h2>
                     <div class="grid-container">
-                        <div class="stat-card">
-                            <div class="stat-number" id="totalProjects">0</div>
-                            <div class="stat-label">Total Projects</div>
-                        </div>
                         <div class="stat-card">
                             <div class="stat-number" id="ongoingProjects">0</div>
                             <div class="stat-label">Ongoing Projects</div>
@@ -635,24 +631,33 @@
                             <div class="stat-number" id="totalTestimonials">0</div>
                             <div class="stat-label">Testimonials</div>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-number" id="totalMessages">0</div>
-                            <div class="stat-label">Messages</div>
-                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- PROJECTS -->
-            <section id="projects" class="content-section">
+            <!-- ONGOING PROJECTS -->
+            <section id="ongoing-projects" class="content-section">
                 <div class="section">
                     <div class="section-header">
-                        <h2><i class="fas fa-building" style="margin-right: 1rem; color: var(--gold);"></i>Manage Projects</h2>
-                        <button class="btn btn-primary" id="addProjectBtn">
-                            <i class="fas fa-plus"></i> Add Project
+                        <h2><i class="fas fa-city" style="margin-right: 1rem; color: var(--gold);"></i>Manage Ongoing Projects</h2>
+                        <button class="btn btn-primary" id="addOngoingProjectBtn">
+                            <i class="fas fa-plus"></i> Add Ongoing Project
                         </button>
                     </div>
-                    <div id="projectsList" class="grid-container"></div>
+                    <div id="ongoingProjectsList" class="grid-container"></div>
+                </div>
+            </section>
+
+            <!-- COMPLETED PROJECTS -->
+            <section id="completed-projects" class="content-section">
+                <div class="section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-building" style="margin-right: 1rem; color: var(--gold);"></i>Manage Completed Projects</h2>
+                        <button class="btn btn-primary" id="addCompletedProjectBtn">
+                            <i class="fas fa-plus"></i> Add Completed Project
+                        </button>
+                    </div>
+                    <div id="completedProjectsList" class="grid-container"></div>
                 </div>
             </section>
 
@@ -660,86 +665,107 @@
             <section id="testimonials" class="content-section">
                 <div class="section">
                     <div class="section-header">
-                        <h2><i class="fas fa-quote-left" style="margin-right: 1rem; color: var(--gold);"></i>Manage Testimonials</h2>
+                        <h2><i class="fas fa-quote-left" style="margin-right: 1rem; color: var(--gold);"></i>Manage Homepage Testimonials</h2>
                         <button class="btn btn-primary" id="addTestimonialBtn">
                             <i class="fas fa-plus"></i> Add Testimonial
                         </button>
                     </div>
+                    <p style="margin: 0 0 1.25rem; color: var(--muted);">These entries are shown in the home page testimonial section.</p>
                     <div id="testimonialsList" class="grid-container"></div>
                 </div>
             </section>
 
-            <!-- MESSAGES -->
-            <section id="messages" class="content-section">
-                <div class="section">
-                    <div class="section-header">
-                        <h2><i class="fas fa-envelope" style="margin-right: 1rem; color: var(--gold);"></i>Customer Messages</h2>
-                    </div>
-                    <div class="table-wrapper">
-                        <table id="messagesTable">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Phone</th>
-                                    <th>Message</th>
-                                    <th>Date</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="messagesBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
         </main>
     </div>
 
-    <!-- PROJECT MODAL -->
-    <div class="modal-overlay" id="projectModal">
+    <!-- ONGOING PROJECT MODAL -->
+    <div class="modal-overlay" id="ongoingProjectModal">
         <div class="modal">
-            <h2 class="modal-header" id="projectModalTitle">Add Project</h2>
-            <form id="projectForm" autocomplete="off">
-                <input type="hidden" id="projectId">
+            <h2 class="modal-header" id="ongoingProjectModalTitle">Add Ongoing Project</h2>
+            <form id="ongoingProjectForm" autocomplete="off">
+                <input type="hidden" id="ongoingProjectId">
                 <div class="form-group">
-                    <label for="projectTitle">Project Title</label>
-                    <input type="text" id="projectTitle" required>
+                    <label for="ongoingProjectTag">Tag</label>
+                    <input type="text" id="ongoingProjectTag" placeholder="Ongoing" required>
                 </div>
                 <div class="form-group">
-                    <label for="projectDescription">Description</label>
-                    <textarea id="projectDescription" required></textarea>
+                    <label for="ongoingProjectTitle">Project Title</label>
+                    <input type="text" id="ongoingProjectTitle" required>
                 </div>
                 <div class="form-group">
-                    <label for="projectCategory">Category</label>
-                    <select id="projectCategory" required>
-                        <option value="">Select Category</option>
-                        <option value="Residential">Residential</option>
-                        <option value="Commercial">Commercial</option>
-                        <option value="Premium">Premium</option>
-                        <option value="Luxury">Luxury</option>
-                    </select>
+                    <label for="ongoingProjectDescription">Description</label>
+                    <textarea id="ongoingProjectDescription" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="projectStatus">Status</label>
-                    <select id="projectStatus" required>
-                        <option value="ongoing">Ongoing</option>
-                        <option value="completed">Completed</option>
-                    </select>
+                    <label for="ongoingProjectMetaOne">Meta Line One</label>
+                    <input type="text" id="ongoingProjectMetaOne" placeholder="Premium homes" required>
                 </div>
                 <div class="form-group">
-                    <label for="projectLocation">Location</label>
-                    <input type="text" id="projectLocation" required>
+                    <label for="ongoingProjectMetaTwo">Meta Line Two</label>
+                    <input type="text" id="ongoingProjectMetaTwo" placeholder="Surapet" required>
                 </div>
                 <div class="form-group">
-                    <label for="projectYear">Year</label>
-                    <input type="number" id="projectYear">
+                    <label for="ongoingProjectImage">Image URL / Path</label>
+                    <input type="text" id="ongoingProjectImage" placeholder="static/images/slide1.jpg" required>
                 </div>
                 <div class="form-group">
-                    <label for="projectImage">Image URL</label>
-                    <input type="url" id="projectImage">
+                    <label for="ongoingProjectLink">Project Link</label>
+                    <input type="text" id="ongoingProjectLink" placeholder="dv-emerald.html" required>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('projectModal')">Cancel</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('ongoingProjectModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- COMPLETED PROJECT MODAL -->
+    <div class="modal-overlay" id="completedProjectModal">
+        <div class="modal">
+            <h2 class="modal-header" id="completedProjectModalTitle">Add Completed Project</h2>
+            <form id="completedProjectForm" autocomplete="off">
+                <input type="hidden" id="completedProjectId">
+                <div class="form-group">
+                    <label for="completedProjectTitle">Project Title</label>
+                    <input type="text" id="completedProjectTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="completedProjectDescription">Description</label>
+                    <textarea id="completedProjectDescription" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="completedProjectType">Project Type</label>
+                    <select id="completedProjectType" required>
+                        <option value="">Select Type</option>
+                        <option value="Completed Residence">Completed Residence</option>
+                        <option value="Completed Development">Completed Development</option>
+                        <option value="Completed Commercial">Completed Commercial</option>
+                        <option value="Completed Premium">Completed Premium</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="completedProjectLocation">Location</label>
+                    <input type="text" id="completedProjectLocation" required>
+                </div>
+                <div class="form-group">
+                    <label for="completedProjectCompletedIn">Completed In</label>
+                    <input type="text" id="completedProjectCompletedIn" required>
+                </div>
+                <div class="form-group">
+                    <label for="completedProjectUnits">Units</label>
+                    <input type="text" id="completedProjectUnits" required>
+                </div>
+                <div class="form-group">
+                    <label for="completedProjectBuiltUpArea">Built-up Area</label>
+                    <input type="text" id="completedProjectBuiltUpArea" required>
+                </div>
+                <div class="form-group">
+                    <label for="completedProjectImage">Image URL</label>
+                    <input type="url" id="completedProjectImage">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('completedProjectModal')">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save</button>
                 </div>
             </form>
@@ -757,8 +783,8 @@
                     <input type="text" id="testimonialAuthor" required>
                 </div>
                 <div class="form-group">
-                    <label for="testimonialAvatar">Avatar (Single Letter)</label>
-                    <input type="text" id="testimonialAvatar" maxlength="1" required>
+                    <label for="testimonialAvatar">Avatar (Single Letter, Optional)</label>
+                    <input type="text" id="testimonialAvatar" maxlength="1" placeholder="Auto from name">
                 </div>
                 <div class="form-group">
                     <label for="testimonialQuote">Testimonial</label>
@@ -782,10 +808,11 @@
 
     <script>
         const state = {
-            projects: [],
+            ongoingProjects: [],
+            completedProjects: [],
             testimonials: [],
-            messages: [],
-            editingProject: null,
+            editingOngoingProject: null,
+            editingCompletedProject: null,
             editingTestimonial: null
         };
 
@@ -805,7 +832,7 @@
                     document.getElementById('adminUsername').textContent = data.username || 'Admin';
                 }
             } catch (error) {
-                window.location.href = '/admin-login.html';
+                window.location.href = '/admin_login.html';
             }
         }
 
@@ -818,8 +845,10 @@
             });
 
             document.getElementById('logoutBtn').addEventListener('click', logout);
-            document.getElementById('projectForm').addEventListener('submit', saveProject);
-            document.getElementById('addProjectBtn').addEventListener('click', () => openProjectModal());
+            document.getElementById('ongoingProjectForm').addEventListener('submit', saveOngoingProject);
+            document.getElementById('addOngoingProjectBtn').addEventListener('click', () => openOngoingProjectModal());
+            document.getElementById('completedProjectForm').addEventListener('submit', saveCompletedProject);
+            document.getElementById('addCompletedProjectBtn').addEventListener('click', () => openCompletedProjectModal());
             document.getElementById('testimonialForm').addEventListener('submit', saveTestimonial);
             document.getElementById('addTestimonialBtn').addEventListener('click', () => openTestimonialModal());
 
@@ -831,8 +860,8 @@
         }
 
         function switchTab(tabName) {
-            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
             document.getElementById(tabName).classList.add('active');
             document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
         }
@@ -845,42 +874,67 @@
             document.getElementById(modalId).classList.remove('show');
         }
 
-        function openProjectModal(projectId = null) {
-            document.getElementById('projectForm').reset();
+        function openOngoingProjectModal(projectId = null) {
+            document.getElementById('ongoingProjectForm').reset();
             if (projectId) {
-                const project = state.projects.find(p => p.id === projectId);
+                const project = state.ongoingProjects.find(item => item.id === projectId);
                 if (project) {
-                    state.editingProject = projectId;
-                    document.getElementById('projectModalTitle').textContent = 'Edit Project';
-                    document.getElementById('projectId').value = project.id;
-                    document.getElementById('projectTitle').value = project.title;
-                    document.getElementById('projectDescription').value = project.description;
-                    document.getElementById('projectCategory').value = project.category;
-                    document.getElementById('projectStatus').value = project.status;
-                    document.getElementById('projectLocation').value = project.location;
-                    document.getElementById('projectYear').value = project.year;
-                    document.getElementById('projectImage').value = project.image;
+                    state.editingOngoingProject = projectId;
+                    document.getElementById('ongoingProjectModalTitle').textContent = 'Edit Ongoing Project';
+                    document.getElementById('ongoingProjectId').value = project.id;
+                    document.getElementById('ongoingProjectTag').value = project.tag || 'Ongoing';
+                    document.getElementById('ongoingProjectTitle').value = project.title || '';
+                    document.getElementById('ongoingProjectDescription').value = project.description || '';
+                    document.getElementById('ongoingProjectMetaOne').value = project.meta_one || project.metaOne || '';
+                    document.getElementById('ongoingProjectMetaTwo').value = project.meta_two || project.metaTwo || '';
+                    document.getElementById('ongoingProjectImage').value = project.image || '';
+                    document.getElementById('ongoingProjectLink').value = project.link || '';
                 }
             } else {
-                state.editingProject = null;
-                document.getElementById('projectModalTitle').textContent = 'Add Project';
-                document.getElementById('projectId').value = '';
+                state.editingOngoingProject = null;
+                document.getElementById('ongoingProjectModalTitle').textContent = 'Add Ongoing Project';
+                document.getElementById('ongoingProjectId').value = '';
             }
-            openModal('projectModal');
+            openModal('ongoingProjectModal');
+        }
+
+        function openCompletedProjectModal(projectId = null) {
+            document.getElementById('completedProjectForm').reset();
+            if (projectId) {
+                const project = state.completedProjects.find(item => item.id === projectId);
+                if (project) {
+                    state.editingCompletedProject = projectId;
+                    document.getElementById('completedProjectModalTitle').textContent = 'Edit Completed Project';
+                    document.getElementById('completedProjectId').value = project.id;
+                    document.getElementById('completedProjectTitle').value = project.title || '';
+                    document.getElementById('completedProjectDescription').value = project.description || '';
+                    document.getElementById('completedProjectType').value = project.project_type || project.projectType || '';
+                    document.getElementById('completedProjectLocation').value = project.location || '';
+                    document.getElementById('completedProjectCompletedIn').value = project.completed_in || project.completedIn || '';
+                    document.getElementById('completedProjectUnits').value = project.units || '';
+                    document.getElementById('completedProjectBuiltUpArea').value = project.built_up_area || project.builtUpArea || '';
+                    document.getElementById('completedProjectImage').value = project.image || '';
+                }
+            } else {
+                state.editingCompletedProject = null;
+                document.getElementById('completedProjectModalTitle').textContent = 'Add Completed Project';
+                document.getElementById('completedProjectId').value = '';
+            }
+            openModal('completedProjectModal');
         }
 
         function openTestimonialModal(testimonialId = null) {
             document.getElementById('testimonialForm').reset();
             if (testimonialId) {
-                const testimonial = state.testimonials.find(t => t.id === testimonialId);
+                const testimonial = state.testimonials.find(item => item.id === testimonialId);
                 if (testimonial) {
                     state.editingTestimonial = testimonialId;
                     document.getElementById('testimonialModalTitle').textContent = 'Edit Testimonial';
                     document.getElementById('testimonialId').value = testimonial.id;
-                    document.getElementById('testimonialAuthor').value = testimonial.author;
-                    document.getElementById('testimonialAvatar').value = testimonial.avatar;
-                    document.getElementById('testimonialQuote').value = testimonial.quote;
-                    document.getElementById('testimonialRating').value = testimonial.rating;
+                    document.getElementById('testimonialAuthor').value = testimonial.author || '';
+                    document.getElementById('testimonialAvatar').value = testimonial.avatar || '';
+                    document.getElementById('testimonialQuote').value = testimonial.quote || '';
+                    document.getElementById('testimonialRating').value = testimonial.rating || 5;
                 }
             } else {
                 state.editingTestimonial = null;
@@ -892,49 +946,45 @@
 
         async function loadAllData() {
             try {
-                const [projects, testimonials, messages] = await Promise.all([
-                    fetch('/api/projects').then(r => r.json()),
-                    fetch('/api/testimonials').then(r => r.json()),
-                    fetch('/api/messages').then(r => r.json())
+                const [ongoingProjects, completedProjects, testimonials] = await Promise.all([
+                    fetch('/api/ongoing-projects').then(response => response.json()),
+                    fetch('/api/completed-projects').then(response => response.json()),
+                    fetch('/api/testimonials').then(response => response.json())
                 ]);
-                state.projects = projects;
+                state.ongoingProjects = ongoingProjects;
+                state.completedProjects = completedProjects;
                 state.testimonials = testimonials;
-                state.messages = messages;
                 updateDashboard();
-                renderProjects();
+                renderOngoingProjects();
+                renderCompletedProjects();
                 renderTestimonials();
-                renderMessages();
             } catch (error) {
                 showAlert('Error loading data', 'danger');
             }
         }
 
         function updateDashboard() {
-            const ongoing = state.projects.filter(p => p.status === 'ongoing').length;
-            const completed = state.projects.filter(p => p.status === 'completed').length;
-            document.getElementById('totalProjects').textContent = state.projects.length;
-            document.getElementById('ongoingProjects').textContent = ongoing;
-            document.getElementById('completedProjects').textContent = completed;
+            document.getElementById('ongoingProjects').textContent = state.ongoingProjects.length;
+            document.getElementById('completedProjects').textContent = state.completedProjects.length;
             document.getElementById('totalTestimonials').textContent = state.testimonials.length;
-            document.getElementById('totalMessages').textContent = state.messages.length;
         }
 
-        async function saveProject(e) {
-            e.preventDefault();
-            const projectId = document.getElementById('projectId').value;
+        async function saveOngoingProject(event) {
+            event.preventDefault();
+            const projectId = document.getElementById('ongoingProjectId').value;
             const projectData = {
-                title: document.getElementById('projectTitle').value,
-                description: document.getElementById('projectDescription').value,
-                category: document.getElementById('projectCategory').value,
-                status: document.getElementById('projectStatus').value,
-                location: document.getElementById('projectLocation').value,
-                year: document.getElementById('projectYear').value,
-                image: document.getElementById('projectImage').value,
+                tag: document.getElementById('ongoingProjectTag').value.trim(),
+                title: document.getElementById('ongoingProjectTitle').value.trim(),
+                description: document.getElementById('ongoingProjectDescription').value.trim(),
+                meta_one: document.getElementById('ongoingProjectMetaOne').value.trim(),
+                meta_two: document.getElementById('ongoingProjectMetaTwo').value.trim(),
+                image: document.getElementById('ongoingProjectImage').value.trim(),
+                link: document.getElementById('ongoingProjectLink').value.trim(),
                 date_created: new Date().toISOString().split('T')[0]
             };
 
             try {
-                const url = projectId ? `/api/projects/${projectId}` : '/api/projects';
+                const url = projectId ? `/api/ongoing-projects/${projectId}` : '/api/ongoing-projects';
                 const method = projectId ? 'PUT' : 'POST';
                 const response = await fetch(url, {
                     method,
@@ -943,8 +993,8 @@
                 });
 
                 if (response.ok) {
-                    showAlert('Project saved!', 'success');
-                    closeModal('projectModal');
+                    showAlert('Ongoing project saved!', 'success');
+                    closeModal('ongoingProjectModal');
                     loadAllData();
                 } else {
                     throw new Error('Save failed');
@@ -954,12 +1004,12 @@
             }
         }
 
-        async function deleteProject(id) {
-            if (!confirm('Delete this project?')) return;
+        async function deleteOngoingProject(id) {
+            if (!confirm('Delete this ongoing project?')) return;
             try {
-                const response = await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+                const response = await fetch(`/api/ongoing-projects/${id}`, { method: 'DELETE' });
                 if (response.ok) {
-                    showAlert('Project deleted!', 'success');
+                    showAlert('Ongoing project deleted!', 'success');
                     loadAllData();
                 }
             } catch (error) {
@@ -967,41 +1017,123 @@
             }
         }
 
-        function renderProjects() {
-            const container = document.getElementById('projectsList');
-            if (state.projects.length === 0) {
-                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--muted);">No projects yet.</p>';
+        function renderOngoingProjects() {
+            const container = document.getElementById('ongoingProjectsList');
+            if (state.ongoingProjects.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--muted);">No ongoing projects yet.</p>';
                 return;
             }
-            container.innerHTML = state.projects.map(p => `
+
+            container.innerHTML = state.ongoingProjects.map((project) => `
                 <div class="card">
-                    ${p.image ? `<img src="${p.image}" alt="${p.title}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 6px; margin-bottom: 1rem;">` : ''}
-                    <div class="card-title">${p.title}</div>
-                    <div class="card-text">${p.description.substring(0, 100)}...</div>
-                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
-                        <span style="background: var(--gold-soft); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; color: var(--coal); font-weight: 600;">${p.category}</span>
-                        <span style="background: ${p.status === 'ongoing' ? 'rgba(76, 175, 80, 0.2)' : 'rgba(100, 100, 100, 0.2)'}; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; color: ${p.status === 'ongoing' ? '#2e7d32' : '#555'}; font-weight: 600;">${p.status}</span>
+                    ${project.image ? `<img src="${project.image}" alt="${project.title}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 6px; margin-bottom: 1rem;">` : ''}
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                        <span style="background: var(--gold-soft); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; color: var(--coal); font-weight: 600;">${project.tag || 'Ongoing'}</span>
                     </div>
+                    <div class="card-title">${project.title || 'Ongoing Project'}</div>
+                    <div class="card-text">${(project.description || '').substring(0, 120)}${project.description && project.description.length > 120 ? '...' : ''}</div>
                     <div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; padding-top: 1rem; border-top: 1px solid var(--line);">
-                        <div><strong>Location:</strong> ${p.location}</div>
-                        <div><strong>Year:</strong> ${p.year}</div>
+                        <div><strong>Meta One:</strong> ${project.meta_one || project.metaOne || '-'}</div>
+                        <div><strong>Meta Two:</strong> ${project.meta_two || project.metaTwo || '-'}</div>
+                        <div><strong>Link:</strong> ${project.link || '-'}</div>
                     </div>
                     <div class="card-actions">
-                        <button class="btn btn-small btn-secondary" onclick="openProjectModal(${p.id})"><i class="fas fa-edit"></i> Edit</button>
-                        <button class="btn btn-small btn-danger" onclick="deleteProject(${p.id})"><i class="fas fa-trash"></i> Delete</button>
+                        <button class="btn btn-small btn-secondary" onclick="openOngoingProjectModal(${project.id})"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn btn-small btn-danger" onclick="deleteOngoingProject(${project.id})"><i class="fas fa-trash"></i> Delete</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        async function saveTestimonial(e) {
-            e.preventDefault();
+        async function saveCompletedProject(event) {
+            event.preventDefault();
+            const projectId = document.getElementById('completedProjectId').value;
+            const projectData = {
+                title: document.getElementById('completedProjectTitle').value.trim(),
+                description: document.getElementById('completedProjectDescription').value.trim(),
+                project_type: document.getElementById('completedProjectType').value,
+                location: document.getElementById('completedProjectLocation').value.trim(),
+                completed_in: document.getElementById('completedProjectCompletedIn').value.trim(),
+                units: document.getElementById('completedProjectUnits').value.trim(),
+                built_up_area: document.getElementById('completedProjectBuiltUpArea').value.trim(),
+                image: document.getElementById('completedProjectImage').value.trim(),
+                date_created: new Date().toISOString().split('T')[0]
+            };
+
+            try {
+                const url = projectId ? `/api/completed-projects/${projectId}` : '/api/completed-projects';
+                const method = projectId ? 'PUT' : 'POST';
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(projectData)
+                });
+
+                if (response.ok) {
+                    showAlert('Completed project saved!', 'success');
+                    closeModal('completedProjectModal');
+                    loadAllData();
+                } else {
+                    throw new Error('Save failed');
+                }
+            } catch (error) {
+                showAlert(error.message, 'danger');
+            }
+        }
+
+        async function deleteCompletedProject(id) {
+            if (!confirm('Delete this completed project?')) return;
+            try {
+                const response = await fetch(`/api/completed-projects/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    showAlert('Completed project deleted!', 'success');
+                    loadAllData();
+                }
+            } catch (error) {
+                showAlert(error.message, 'danger');
+            }
+        }
+
+        function renderCompletedProjects() {
+            const container = document.getElementById('completedProjectsList');
+            if (state.completedProjects.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--muted);">No completed projects yet.</p>';
+                return;
+            }
+
+            container.innerHTML = state.completedProjects.map((project, index) => `
+                <div class="card">
+                    ${project.image ? `<img src="${project.image}" alt="${project.title}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 6px; margin-bottom: 1rem;">` : ''}
+                    <div class="card-title">${project.title || 'Completed Project'}</div>
+                    <div class="card-text">${(project.description || '').substring(0, 100)}${project.description && project.description.length > 100 ? '...' : ''}</div>
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                        <span style="background: var(--gold-soft); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; color: var(--coal); font-weight: 600;">${project.project_type || project.projectType || 'Completed Residence'}</span>
+                        <span style="background: rgba(100, 100, 100, 0.2); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; color: #555; font-weight: 600;">Project ${String(index + 1).padStart(2, '0')}</span>
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; padding-top: 1rem; border-top: 1px solid var(--line);">
+                        <div><strong>Location:</strong> ${project.location || 'Not specified'}</div>
+                        <div><strong>Completed In:</strong> ${project.completed_in || project.completedIn || 'Not specified'}</div>
+                        <div><strong>Units:</strong> ${project.units || 'Not specified'}</div>
+                        <div><strong>Built-up Area:</strong> ${project.built_up_area || project.builtUpArea || 'Not specified'}</div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-small btn-secondary" onclick="openCompletedProjectModal(${project.id})"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn btn-small btn-danger" onclick="deleteCompletedProject(${project.id})"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function saveTestimonial(event) {
+            event.preventDefault();
             const testimonialId = document.getElementById('testimonialId').value;
+            const authorName = document.getElementById('testimonialAuthor').value.trim();
+            const avatarInput = document.getElementById('testimonialAvatar').value.trim();
             const testimonialData = {
-                author: document.getElementById('testimonialAuthor').value,
-                avatar: document.getElementById('testimonialAvatar').value.toUpperCase(),
-                quote: document.getElementById('testimonialQuote').value,
-                rating: parseInt(document.getElementById('testimonialRating').value),
+                author: authorName,
+                avatar: (avatarInput || authorName.slice(0, 1) || 'D').toUpperCase(),
+                quote: document.getElementById('testimonialQuote').value.trim(),
+                rating: parseInt(document.getElementById('testimonialRating').value, 10),
                 date_created: new Date().toISOString().split('T')[0]
             };
 
@@ -1018,6 +1150,8 @@
                     showAlert('Testimonial saved!', 'success');
                     closeModal('testimonialModal');
                     loadAllData();
+                } else {
+                    throw new Error('Save failed');
                 }
             } catch (error) {
                 showAlert(error.message, 'danger');
@@ -1043,59 +1177,29 @@
                 container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--muted);">No testimonials yet.</p>';
                 return;
             }
-            container.innerHTML = state.testimonials.map(t => `
+
+            container.innerHTML = state.testimonials.map((testimonial) => `
                 <div class="card">
                     <div class="stars" style="margin-bottom: 1rem;">
-                        ${'⭐'.repeat(t.rating)}
+                        ${'⭐'.repeat(testimonial.rating || 5)}
                     </div>
                     <div class="card-text" style="font-style: italic; margin-bottom: 1rem;">
-                        "${t.quote.substring(0, 150)}..."
+                        "${(testimonial.quote || '').substring(0, 150)}${testimonial.quote && testimonial.quote.length > 150 ? '...' : ''}"
                     </div>
                     <div style="display: flex; align-items: center; gap: 1rem;">
                         <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--gold-soft); display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--coal);">
-                            ${t.avatar}
+                            ${(testimonial.avatar || 'D').toUpperCase()}
                         </div>
                         <div>
-                            <div style="font-weight: 600; color: var(--coal);">${t.author}</div>
-                            <div style="font-size: 0.85rem; color: var(--muted);">${t.date_created}</div>
+                            <div style="font-weight: 600; color: var(--coal);">${testimonial.author || 'Customer'}</div>
+                            <div style="font-size: 0.85rem; color: var(--muted);">${testimonial.date_created || ''}</div>
                         </div>
                     </div>
                     <div class="card-actions" style="margin-top: 1rem;">
-                        <button class="btn btn-small btn-secondary" onclick="openTestimonialModal(${t.id})"><i class="fas fa-edit"></i> Edit</button>
-                        <button class="btn btn-small btn-danger" onclick="deleteTestimonial(${t.id})"><i class="fas fa-trash"></i> Delete</button>
+                        <button class="btn btn-small btn-secondary" onclick="openTestimonialModal(${testimonial.id})"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn btn-small btn-danger" onclick="deleteTestimonial(${testimonial.id})"><i class="fas fa-trash"></i> Delete</button>
                     </div>
                 </div>
-            `).join('');
-        }
-
-        async function deleteMessage(id) {
-            if (!confirm('Delete this message?')) return;
-            try {
-                const response = await fetch(`/api/messages/${id}`, { method: 'DELETE' });
-                if (response.ok) {
-                    showAlert('Message deleted!', 'success');
-                    loadAllData();
-                }
-            } catch (error) {
-                showAlert(error.message, 'danger');
-            }
-        }
-
-        function renderMessages() {
-            const tbody = document.getElementById('messagesBody');
-            if (state.messages.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--muted); padding: 2rem;">No messages yet.</td></tr>';
-                return;
-            }
-            tbody.innerHTML = state.messages.map(m => `
-                <tr>
-                    <td>${m.name}</td>
-                    <td>${m.email}</td>
-                    <td>${m.phone}</td>
-                    <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${m.message.substring(0, 50)}...</td>
-                    <td>${m.date_created}</td>
-                    <td><button class="btn btn-small btn-danger" onclick="deleteMessage(${m.id})"><i class="fas fa-trash"></i> Delete</button></td>
-                </tr>
             `).join('');
         }
 

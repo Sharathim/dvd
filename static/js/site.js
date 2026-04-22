@@ -1,4 +1,391 @@
 (function () {
+  const TESTIMONIALS_FALLBACK = [
+    {
+      id: 1,
+      author: "Mr. Shyam Sundar",
+      quote: "My decision to purchase a flat with your team was strongly influenced by glowing recommendations from trusted people in and around the locality. Your extensive experience in constructing high-quality homes further reinforced my confidence, making this project a proud milestone in our lives. We are especially impressed by your attention to detail, commitment to craftsmanship, and your willingness to accommodate customizations to suit our requirements. We are proud to say that you are playing a key role in turning our dream of owning a home into reality. It is truly an honour to have our dream home built by your team, and we eagerly look forward to its completion.",
+      rating: 5,
+      avatar: "S"
+    },
+    {
+      id: 2,
+      author: "Mr. Kothandaraman",
+      quote: "I personally witnessed the use of high-quality chamber bricks and ready-mix concrete at the site, which speaks volumes about the commitment to construction excellence. There is understandably a high level of expectation among the buyers and I am confident that the team will exceed those expectations. The entire management and staff at DV have been exceptionally friendly and cooperative throughout the process, making the journey smooth and reassuring.",
+      rating: 5,
+      avatar: "K"
+    }
+  ];
+
+  const toSafeText = (value) => String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+
+  const buildStars = (rating) => {
+    const score = Math.max(1, Math.min(5, parseInt(rating, 10) || 5));
+    return "★".repeat(score) + "☆".repeat(5 - score);
+  };
+
+  const getAvatar = (item) => {
+    const fromData = (item.avatar || "").trim();
+    if (fromData) {
+      return fromData.slice(0, 1).toUpperCase();
+    }
+    const fromAuthor = (item.author || "").trim();
+    return fromAuthor ? fromAuthor.slice(0, 1).toUpperCase() : "D";
+  };
+
+  const buildTestimonialCard = (item) => {
+    const author = toSafeText(item.author || "Customer");
+    const quote = toSafeText(item.quote || "");
+    const avatar = toSafeText(getAvatar(item));
+    const stars = toSafeText(buildStars(item.rating));
+
+    return `
+      <article class="testimonial-card reveal visible">
+        <div class="stars" aria-label="Five star rating">${stars}</div>
+        <blockquote>${quote}</blockquote>
+        <div class="testimonial-author">
+          <span class="avatar">${avatar}</span>
+          <span>${author}</span>
+        </div>
+      </article>`;
+  };
+
+  async function loadTestimonialsData() {
+    try {
+      const response = await fetch("/data/testimonials.json", { cache: "no-store" });
+      if (!response.ok) {
+        return TESTIMONIALS_FALLBACK;
+      }
+      const payload = await response.json();
+      return Array.isArray(payload) && payload.length ? payload : TESTIMONIALS_FALLBACK;
+    } catch {
+      return TESTIMONIALS_FALLBACK;
+    }
+  }
+
+  async function initTestimonialsSection() {
+    const shell = document.getElementById("testimonialShell");
+    const viewport = document.getElementById("testimonialViewport");
+    const track = document.getElementById("testimonialTrack");
+    const nextBtn = document.getElementById("testimonialNext");
+    const dotsWrap = document.getElementById("testimonialDots");
+
+    if (!shell || !viewport || !track || !nextBtn || !dotsWrap) {
+      return;
+    }
+
+    const items = await loadTestimonialsData();
+
+    let cardsPerSlide = 2;
+    let slideCount = 1;
+    let currentSlide = 0;
+    let autoTimer = null;
+    let isPaused = false;
+    let isAnimating = false;
+
+    const chunkItems = (source, size) => {
+      const pages = [];
+      for (let index = 0; index < source.length; index += size) {
+        pages.push(source.slice(index, index + size));
+      }
+      return pages;
+    };
+
+    const buildTrackContent = (size) => {
+      const pages = chunkItems(items, size);
+      if (!pages.length) {
+        return [];
+      }
+
+      if (pages.length > 1) {
+        pages.push(pages[0]);
+      }
+      return pages;
+    };
+
+    const getCardsPerSlide = () => window.matchMedia("(max-width: 980px)").matches ? 1 : 2;
+
+    const renderDots = () => {
+      dotsWrap.innerHTML = "";
+      if (slideCount <= 1) {
+        return;
+      }
+
+      for (let index = 0; index < slideCount; index++) {
+        const dot = document.createElement("button");
+        dot.className = "testimonial-dot";
+        dot.type = "button";
+        dot.setAttribute("aria-label", `Go to testimonial slide ${index + 1}`);
+        dot.addEventListener("click", () => {
+          goToSlide(index);
+          restartAuto();
+        });
+        dotsWrap.appendChild(dot);
+      }
+    };
+
+    const setActiveDot = () => {
+      const dots = Array.from(dotsWrap.querySelectorAll(".testimonial-dot"));
+      const dotIndex = slideCount > 0 ? Math.min(currentSlide, slideCount - 1) : 0;
+      dots.forEach((dot, index) => {
+        dot.classList.toggle("active", index === dotIndex);
+      });
+    };
+
+    const renderTrack = () => {
+      const pages = buildTrackContent(cardsPerSlide);
+      track.innerHTML = pages.map(function (page) {
+        return `
+          <div class="testimonial-slide">
+            ${page.map(buildTestimonialCard).join("")}
+          </div>`;
+      }).join("");
+    };
+
+    const applyTransform = (smooth = true) => {
+      track.style.transitionDuration = smooth ? "700ms" : "0ms";
+      track.style.transform = `translateX(-${currentSlide * 100}%)`;
+      isAnimating = smooth;
+      setActiveDot();
+    };
+
+    const updateSliderMode = () => {
+      cardsPerSlide = getCardsPerSlide();
+      slideCount = Math.max(1, Math.ceil(items.length / cardsPerSlide));
+      const shouldSlide = slideCount > 1;
+
+      renderTrack();
+      shell.classList.toggle("is-slider", shouldSlide);
+      track.classList.toggle("is-slider", shouldSlide);
+
+      if (currentSlide >= slideCount) {
+        currentSlide = 0;
+      }
+
+      renderDots();
+      setActiveDot();
+      applyTransform(false);
+    };
+
+    const goToSlide = (index, smooth = true) => {
+      if (slideCount <= 1) {
+        currentSlide = 0;
+        applyTransform(false);
+        return;
+      }
+
+      currentSlide = Math.max(0, Math.min(index, slideCount));
+      applyTransform(smooth);
+    };
+
+    const nextSlide = () => {
+      if (slideCount <= 1) {
+        return;
+      }
+      if (isAnimating) {
+        return;
+      }
+      if (currentSlide >= slideCount) {
+        currentSlide = 0;
+        applyTransform(false);
+      }
+      goToSlide(currentSlide + 1);
+    };
+
+    const stopAuto = () => {
+      if (autoTimer) {
+        clearInterval(autoTimer);
+        autoTimer = null;
+      }
+    };
+
+    const startAuto = () => {
+      stopAuto();
+      if (slideCount > 1 && !isPaused) {
+        autoTimer = window.setInterval(() => {
+          nextSlide();
+        }, 5000);
+      }
+    };
+
+    const restartAuto = () => {
+      startAuto();
+    };
+
+    const pauseAuto = () => {
+      isPaused = true;
+      stopAuto();
+    };
+
+    const resumeAuto = () => {
+      isPaused = false;
+      startAuto();
+    };
+
+    nextBtn.addEventListener("click", () => {
+      nextSlide();
+      restartAuto();
+    });
+
+    viewport.addEventListener("pointerdown", pauseAuto);
+    viewport.addEventListener("pointerup", resumeAuto);
+    viewport.addEventListener("pointercancel", resumeAuto);
+    viewport.addEventListener("pointerleave", () => {
+      if (isPaused) {
+        resumeAuto();
+      }
+    });
+
+    track.addEventListener("transitionend", () => {
+      isAnimating = false;
+      if (currentSlide === slideCount) {
+        currentSlide = 0;
+        applyTransform(false);
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      updateSliderMode();
+      restartAuto();
+    });
+
+    updateSliderMode();
+    startAuto();
+  }
+
+  const loadCompletedProjectsData = async () => {
+    try {
+      const response = await fetch("/api/completed-projects", { cache: "no-store" });
+      if (!response.ok) {
+        return [];
+      }
+
+      const payload = await response.json();
+      return Array.isArray(payload) ? payload : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const buildCompletedProjectCard = (item, index) => {
+    const title = toSafeText(item.title || "Completed Project");
+    const description = toSafeText(item.description || "");
+    const projectType = toSafeText(item.project_type || item.projectType || "Completed Residence");
+    const location = toSafeText(item.location || "Not specified");
+    const completedIn = toSafeText(item.completed_in || item.completedIn || "Not specified");
+    const units = toSafeText(item.units || "Not specified");
+    const builtUpArea = toSafeText(item.built_up_area || item.builtUpArea || "Not specified");
+    const image = toSafeText(item.image || "");
+
+    return `
+      <article class="completed-project-card reveal visible">
+        <div class="completed-project-media">
+          ${image ? `<img src="${image}" alt="${title}">` : ""}
+          <span class="completed-project-index"><i class="fas fa-star"></i> Project ${String(index + 1).padStart(2, "0")}</span>
+        </div>
+        <div class="completed-project-content">
+          <div class="completed-project-heading">
+            <p class="completed-project-kicker">${projectType}</p>
+            <h3>${title}</h3>
+            <p>${description}</p>
+          </div>
+          <table class="completed-project-table" aria-label="${title} project details">
+            <tbody>
+              <tr>
+                <th scope="row">Location</th>
+                <td>${location}</td>
+              </tr>
+              <tr>
+                <th scope="row">Completed In</th>
+                <td>${completedIn}</td>
+              </tr>
+              <tr>
+                <th scope="row">Units</th>
+                <td>${units}</td>
+              </tr>
+              <tr>
+                <th scope="row">Built-up Area</th>
+                <td>${builtUpArea}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>`;
+  };
+
+  async function initCompletedProjectsSection() {
+    const list = document.getElementById("completedProjectsList");
+    if (!list) {
+      return;
+    }
+
+    const projects = await loadCompletedProjectsData();
+    if (!projects.length) {
+      list.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--muted);">No completed projects yet.</p>';
+      return;
+    }
+
+    list.innerHTML = projects.map((item, index) => buildCompletedProjectCard(item, index)).join("");
+  }
+
+  const loadOngoingProjectsData = async () => {
+    try {
+      const response = await fetch("/api/ongoing-projects", { cache: "no-store" });
+      if (!response.ok) {
+        return [];
+      }
+
+      const payload = await response.json();
+      return Array.isArray(payload) ? payload : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const buildOngoingProjectCard = (item) => {
+    const title = toSafeText(item.title || "Project");
+    const tag = toSafeText(item.tag || "Ongoing");
+    const description = toSafeText(item.description || "");
+    const metaOne = toSafeText(item.meta_one || "");
+    const metaTwo = toSafeText(item.meta_two || "");
+    const image = toSafeText(item.image || "");
+    const link = toSafeText(item.link || "#");
+
+    return `
+      <article class="project-card reveal visible">
+        ${image ? `<img src="${image}" alt="${title} project">` : ""}
+        <div class="project-body">
+          <span class="project-tag">${tag}</span>
+          <h3>${title}</h3>
+          <p>${description}</p>
+          <div class="project-meta">
+            <span>${metaOne}</span>
+            <span>${metaTwo}</span>
+          </div>
+          <a href="${link}" class="btn btn-primary"><i class="fas fa-arrow-right"></i> View Project</a>
+        </div>
+      </article>`;
+  };
+
+  async function initOngoingProjectsSection() {
+    const grid = document.getElementById("ongoingProjectGrid");
+    if (!grid) {
+      return;
+    }
+
+    const projects = await loadOngoingProjectsData();
+    if (!projects.length) {
+      grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #666;">No ongoing projects yet.</p>';
+      return;
+    }
+
+    grid.innerHTML = projects.map((item) => buildOngoingProjectCard(item)).join("");
+  }
+
   const ensureElement = (selector, creator) => {
     const existing = document.querySelector(selector);
     if (existing) return existing;
@@ -236,6 +623,10 @@
   }, { threshold: 0.35 });
 
   document.querySelectorAll(".stat-panel, .stats-grid").forEach((panel) => statObserver.observe(panel));
+
+  initTestimonialsSection();
+  initCompletedProjectsSection();
+  initOngoingProjectsSection();
 
   const messageForm = document.getElementById("contactForm");
   if (messageForm) {
