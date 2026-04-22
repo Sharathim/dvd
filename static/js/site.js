@@ -630,33 +630,60 @@
 
   const messageForm = document.getElementById("contactForm");
   if (messageForm) {
-    messageForm.addEventListener("submit", function (event) {
+    messageForm.addEventListener("submit", async function (event) {
       event.preventDefault();
       const formData = Object.fromEntries(new FormData(messageForm).entries());
-      const payload = {
-        ...formData,
-        id: Date.now(),
-        source: document.body.dataset.page || "website",
-        timestamp: new Date().toISOString()
-      };
-
-      let messages = [];
-      try {
-        const saved = localStorage.getItem("dv_messages");
-        messages = saved ? JSON.parse(saved) : [];
-      } catch (error) {
-        messages = [];
-      }
-
-      messages.unshift(payload);
-      localStorage.setItem("dv_messages", JSON.stringify(messages));
-
       const status = document.getElementById("formStatus");
-      if (status) {
-        status.classList.add("visible");
-        status.textContent = "Message sent successfully. We will contact you shortly.";
+      const submitButton = messageForm.querySelector('button[type="submit"]');
+
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = "Sending...";
       }
-      messageForm.reset();
+
+      try {
+        const response = await fetch("/api/contact", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            name: formData.name || "",
+            email: formData.email || "",
+            subject: formData.subject || "",
+            message: formData.message || ""
+          })
+        });
+
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || !result.ok) {
+          throw new Error(result.error || "Failed to send message.");
+        }
+
+        if (status) {
+          status.classList.add("visible");
+          status.style.color = "var(--gold)";
+          status.textContent = "Message sent successfully. We will contact you shortly.";
+        }
+        messageForm.reset();
+      } catch (error) {
+        if (status) {
+          status.classList.add("visible");
+          status.style.color = "#ff8f8f";
+          status.textContent = error.message || "Failed to send message. Please try again.";
+        }
+      } finally {
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = "Send Message";
+        }
+      }
+
+      if (status) {
+        window.setTimeout(() => {
+          status.classList.remove("visible");
+        }, 7000);
+      }
     });
   }
 

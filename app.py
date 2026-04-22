@@ -2,12 +2,19 @@ from flask import Flask, abort, jsonify, render_template, send_from_directory, r
 from pathlib import Path
 import json
 from functools import wraps
+from email.message import EmailMessage
+import os
+import smtplib
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 app.secret_key = "dv_dream_homes_secret_key_2024"
 
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
+CONTACT_TO_EMAIL = "rathisha273@gmail.com"
+
+load_dotenv(BASE_DIR / ".env")
 
 
 @app.route("/")
@@ -74,6 +81,40 @@ def _require_admin(f):
     return decorated_function
 
 
+def _send_contact_email(name: str, email: str, subject: str, message: str):
+    smtp_host = os.getenv("DV_SMTP_HOST", "").strip()
+    smtp_port = int(os.getenv("DV_SMTP_PORT", "587"))
+    smtp_user = os.getenv("DV_SMTP_USER", "").strip()
+    smtp_password = os.getenv("DV_SMTP_PASSWORD", "")
+    smtp_from = os.getenv("DV_SMTP_FROM", smtp_user).strip() or smtp_user
+    use_tls = os.getenv("DV_SMTP_USE_TLS", "true").strip().lower() == "true"
+
+    if not smtp_host or not smtp_user or not smtp_password or not smtp_from:
+        raise RuntimeError("SMTP configuration is missing")
+
+    email_message = EmailMessage()
+    email_message["Subject"] = f"[DV Dream Homes] Contact Form: {subject}"
+    email_message["From"] = smtp_from
+    email_message["To"] = CONTACT_TO_EMAIL
+    email_message["Reply-To"] = email
+
+    body = (
+        "New contact form submission\n\n"
+        f"Name: {name}\n"
+        f"Email: {email}\n"
+        f"Subject: {subject}\n"
+        f"Message:\n{message}\n\n"
+        f"Source IP: {request.remote_addr or 'Unknown'}"
+    )
+    email_message.set_content(body)
+
+    with smtplib.SMTP(smtp_host, smtp_port, timeout=20) as server:
+        if use_tls:
+            server.starttls()
+        server.login(smtp_user, smtp_password)
+        server.send_message(email_message)
+
+
 @app.route("/api/projects")
 def api_projects():
     return jsonify(_read_json_array("projects.json"))
@@ -104,6 +145,28 @@ def api_admin():
         payload = json.load(handle)
 
     return jsonify(payload if isinstance(payload, dict) else {})
+
+
+@app.route("/api/contact", methods=["POST"])
+def api_contact():
+    data = request.get_json(silent=True) or {}
+
+    name = str(data.get("name", "")).strip()
+    email = str(data.get("email", "")).strip()
+    subject = str(data.get("subject", "")).strip()
+    message = str(data.get("message", "")).strip()
+
+    if not name or not email or not subject or not message:
+        return jsonify({"ok": False, "error": "Please fill all required fields."}), 400
+
+    try:
+        _send_contact_email(name, email, subject, message)
+    except RuntimeError:
+        return jsonify({"ok": False, "error": "Mail server is not configured."}), 500
+    except Exception:
+        return jsonify({"ok": False, "error": "Failed to send message. Please try again."}), 502
+
+    return jsonify({"ok": True}), 200
 
 
 # ===== ADMIN AUTHENTICATION =====
