@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>DV Dream Homes Admin Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="static/assets/images/dv-logo.png">
+    <link rel="icon" type="image/png" href="/static/assets/images/dv-logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Bebas+Neue&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
@@ -304,7 +304,7 @@
     <div class="login-container">
         <div class="login-header">
             <div class="login-logo">
-                <img src="static/assets/images/dv-logo.png" alt="DV Dream Homes">
+                <img src="/static/assets/images/dv-logo.png" alt="DV Dream Homes">
                 <span class="login-logo-fallback">DV</span>
             </div>
             <h1 class="login-title">Admin Portal</h1>
@@ -375,7 +375,7 @@
 
                 if (response.ok) {
                     localStorage.setItem('dv_admin_user', username);
-                    window.location.href = '/admin_dashboard.html';
+                    window.location.href = '/admin/dashboard';
                 } else {
                     throw new Error(data.error || 'Login failed');
                 }

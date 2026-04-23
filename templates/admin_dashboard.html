@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>DV Dream Homes Admin Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="static/assets/images/dv-logo.png">
+    <link rel="icon" type="image/png" href="/static/assets/images/dv-logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Bebas+Neue&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
@@ -1065,7 +1065,7 @@
     <div class="admin-wrapper">
         <header>
             <a href="#" class="header-brand">
-                <span class="header-logo"><img src="static/assets/images/dv-logo.png" alt="DV Dream Homes"></span>
+                <span class="header-logo"><img src="/static/assets/images/dv-logo.png" alt="DV Dream Homes"></span>
                 <span class="header-title">Admin Dashboard</span>
             </a>
             <button class="mobile-menu-btn" id="sidebarToggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="adminSidebar">
@@ -1210,11 +1210,64 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="ongoingProjectLink">Project Link</label>
-                    <input type="text" id="ongoingProjectLink" placeholder="dv-emerald.html" required>
+                    <label for="ongoingProjectSlug">Project Slug</label>
+                    <input type="text" id="ongoingProjectSlug" placeholder="dv-emerald" required>
+                </div>
+                <div class="form-group">
+                    <label for="ongoingDetailLocation">Detail Page: Location</label>
+                    <input type="text" id="ongoingDetailLocation" placeholder="Surapet, Chennai">
+                </div>
+                <div class="form-group">
+                    <label for="ongoingDetailSummaryTitle">Detail Page: Summary Title</label>
+                    <input type="text" id="ongoingDetailSummaryTitle" placeholder="Great location to match the great value">
+                </div>
+                <div class="form-group">
+                    <label for="ongoingDetailSummaryOne">Detail Page: Summary Paragraph 1</label>
+                    <textarea id="ongoingDetailSummaryOne" placeholder="Main intro paragraph"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="ongoingDetailSummaryTwo">Detail Page: Summary Paragraph 2</label>
+                    <textarea id="ongoingDetailSummaryTwo" placeholder="Second intro paragraph"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="ongoingDetailHeroImage">Detail Page: Hero Background Image</label>
+                    <input type="text" id="ongoingDetailHeroImage" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label for="ongoingDetailCoverImage">Detail Page: Cover Image</label>
+                    <input type="text" id="ongoingDetailCoverImage" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label for="ongoingDetailFloorPlanImage">Detail Page: Floor Plan Image</label>
+                    <input type="text" id="ongoingDetailFloorPlanImage" placeholder="static/images/...">
+                </div>
+                <div class="form-group">
+                    <label for="ongoingDetailCatalogueUrl">Detail Page: Catalogue URL</label>
+                    <input type="text" id="ongoingDetailCatalogueUrl" placeholder="https://...pdf">
+                </div>
+                <div class="form-group">
+                    <label for="ongoingDetailStats">Detail Page: Stats (one per line)</label>
+                    <textarea id="ongoingDetailStats" placeholder="6 Premium 2BHK Apartments&#10;Stilt + 2 Floors&#10;850 Sq.Ft&#10;2 Units / Floor"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="ongoingDetailHighlights">Detail Page: Highlights (one per line)</label>
+                    <textarea id="ongoingDetailHighlights" placeholder="Premium Community Design&#10;Vastu Compliant"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="ongoingDetailNearby">Detail Page: Nearby Places (one per line)</label>
+                    <textarea id="ongoingDetailNearby" placeholder="Meridian Hospital&#10;PVR Cinemas"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="ongoingDetailAvailabilityColumns">Detail Page: Availability Columns (use | separator)</label>
+                    <input type="text" id="ongoingDetailAvailabilityColumns" placeholder="First Floor|Second Floor|Third Floor">
+                </div>
+                <div class="form-group">
+                    <label for="ongoingDetailAvailabilityRows">Detail Page: Availability Rows (one per line, format: Label|Value1|Value2|Value3)</label>
+                    <textarea id="ongoingDetailAvailabilityRows" placeholder="Front Side|Available|Booked|Available&#10;Rear Side|Booked|Available|Booked"></textarea>
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeModal('ongoingProjectModal')">Cancel</button>
+                    <button type="button" class="btn btn-secondary" onclick="previewOngoingProjectDetail()"><i class="fas fa-eye"></i> Preview Detail Page</button>
                     <button type="submit" class="btn btn-primary">Save</button>
                 </div>
             </form>
@@ -1381,12 +1434,12 @@
                 const response = await fetch('/api/admin/status');
                 const data = await response.json();
                 if (!data.authenticated) {
-                    window.location.href = '/admin_login.html';
+                    window.location.href = '/admin';
                 } else {
                     document.getElementById('adminUsername').textContent = data.username || 'Admin';
                 }
             } catch (error) {
-                window.location.href = '/admin_login.html';
+                window.location.href = '/admin';
             }
         }
 
@@ -1665,6 +1718,115 @@
             document.getElementById(modalId).classList.remove('show');
         }
 
+        function createSlug(value) {
+            return String(value || '')
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/(^-|-$)/g, '') || 'project';
+        }
+
+        function splitLines(value) {
+            return String(value || '')
+                .split('\n')
+                .map((entry) => entry.trim())
+                .filter(Boolean);
+        }
+
+        function parseAvailabilityRows(value) {
+            return splitLines(value)
+                .map((line) => line.split('|').map((entry) => entry.trim()).filter(Boolean))
+                .filter((parts) => parts.length >= 2)
+                .map((parts) => ({
+                    label: parts[0],
+                    values: parts.slice(1)
+                }));
+        }
+
+        function formatAvailabilityRows(rows) {
+            if (!Array.isArray(rows)) {
+                return '';
+            }
+
+            return rows
+                .map((row) => {
+                    const label = String(row && row.label ? row.label : '').trim();
+                    const values = Array.isArray(row && row.values) ? row.values.map((entry) => String(entry || '').trim()).filter(Boolean) : [];
+                    if (!label || !values.length) {
+                        return '';
+                    }
+                    return [label, ...values].join('|');
+                })
+                .filter(Boolean)
+                .join('\n');
+        }
+
+        function readOngoingDetailFromForm() {
+            return {
+                location: document.getElementById('ongoingDetailLocation').value.trim(),
+                summary_title: document.getElementById('ongoingDetailSummaryTitle').value.trim(),
+                summary_para_one: document.getElementById('ongoingDetailSummaryOne').value.trim(),
+                summary_para_two: document.getElementById('ongoingDetailSummaryTwo').value.trim(),
+                hero_image: document.getElementById('ongoingDetailHeroImage').value.trim(),
+                cover_image: document.getElementById('ongoingDetailCoverImage').value.trim(),
+                floor_plan_image: document.getElementById('ongoingDetailFloorPlanImage').value.trim(),
+                catalogue_url: document.getElementById('ongoingDetailCatalogueUrl').value.trim(),
+                stats: splitLines(document.getElementById('ongoingDetailStats').value),
+                highlights: splitLines(document.getElementById('ongoingDetailHighlights').value),
+                nearby_places: splitLines(document.getElementById('ongoingDetailNearby').value),
+                availability_columns: String(document.getElementById('ongoingDetailAvailabilityColumns').value || '')
+                    .split('|')
+                    .map((entry) => entry.trim())
+                    .filter(Boolean),
+                availability_rows: parseAvailabilityRows(document.getElementById('ongoingDetailAvailabilityRows').value)
+            };
+        }
+
+        function previewOngoingProjectDetail() {
+            const titleValue = document.getElementById('ongoingProjectTitle').value.trim();
+            const slugValue = createSlug(document.getElementById('ongoingProjectSlug').value.trim() || titleValue);
+
+            if (!titleValue) {
+                showAlert('Please enter project title before preview.', 'danger');
+                return;
+            }
+
+            const previewProject = {
+                id: document.getElementById('ongoingProjectId').value ? Number(document.getElementById('ongoingProjectId').value) : 0,
+                tag: document.getElementById('ongoingProjectTag').value.trim() || 'Ongoing',
+                title: titleValue,
+                description: document.getElementById('ongoingProjectDescription').value.trim(),
+                meta_one: document.getElementById('ongoingProjectMetaOne').value.trim(),
+                meta_two: document.getElementById('ongoingProjectMetaTwo').value.trim(),
+                image: document.getElementById('ongoingProjectImage').value.trim(),
+                slug: slugValue,
+                detail: readOngoingDetailFromForm()
+            };
+
+            try {
+                sessionStorage.setItem('dv_ongoing_project_preview', JSON.stringify(previewProject));
+                window.open(`ongoing-projects.html?project=${encodeURIComponent(slugValue)}&preview=1`, '_blank', 'noopener');
+            } catch (error) {
+                showAlert('Unable to open preview right now.', 'danger');
+            }
+        }
+
+        function writeOngoingDetailToForm(detail) {
+            const value = detail && typeof detail === 'object' ? detail : {};
+            document.getElementById('ongoingDetailLocation').value = value.location || '';
+            document.getElementById('ongoingDetailSummaryTitle').value = value.summary_title || '';
+            document.getElementById('ongoingDetailSummaryOne').value = value.summary_para_one || '';
+            document.getElementById('ongoingDetailSummaryTwo').value = value.summary_para_two || '';
+            document.getElementById('ongoingDetailHeroImage').value = value.hero_image || '';
+            document.getElementById('ongoingDetailCoverImage').value = value.cover_image || '';
+            document.getElementById('ongoingDetailFloorPlanImage').value = value.floor_plan_image || '';
+            document.getElementById('ongoingDetailCatalogueUrl').value = value.catalogue_url || '';
+            document.getElementById('ongoingDetailStats').value = Array.isArray(value.stats) ? value.stats.join('\n') : '';
+            document.getElementById('ongoingDetailHighlights').value = Array.isArray(value.highlights) ? value.highlights.join('\n') : '';
+            document.getElementById('ongoingDetailNearby').value = Array.isArray(value.nearby_places) ? value.nearby_places.join('\n') : '';
+            document.getElementById('ongoingDetailAvailabilityColumns').value = Array.isArray(value.availability_columns) ? value.availability_columns.join('|') : '';
+            document.getElementById('ongoingDetailAvailabilityRows').value = formatAvailabilityRows(value.availability_rows);
+        }
+
         function openOngoingProjectModal(projectId = null) {
             document.getElementById('ongoingProjectForm').reset();
             document.getElementById('ongoingImageUpload').value = '';
@@ -1680,12 +1842,15 @@
                     document.getElementById('ongoingProjectMetaOne').value = project.meta_one || project.metaOne || '';
                     document.getElementById('ongoingProjectMetaTwo').value = project.meta_two || project.metaTwo || '';
                     document.getElementById('ongoingProjectImage').value = project.image || '';
-                    document.getElementById('ongoingProjectLink').value = project.link || '';
+                    document.getElementById('ongoingProjectSlug').value = project.slug || createSlug(project.title || '');
+                    writeOngoingDetailToForm(project.detail || {});
                 }
             } else {
                 state.editingOngoingProject = null;
                 document.getElementById('ongoingProjectModalTitle').textContent = 'Add Ongoing Project';
                 document.getElementById('ongoingProjectId').value = '';
+                document.getElementById('ongoingProjectSlug').value = '';
+                writeOngoingDetailToForm({});
             }
             syncActiveImageFromInput('ongoingDefaultGallery', 'ongoingProjectImage', 'ongoingImagePreview');
             openModal('ongoingProjectModal');
@@ -1768,14 +1933,17 @@
         async function saveOngoingProject(event) {
             event.preventDefault();
             const projectId = document.getElementById('ongoingProjectId').value;
+            const titleValue = document.getElementById('ongoingProjectTitle').value.trim();
+            const slugValue = createSlug(document.getElementById('ongoingProjectSlug').value.trim() || titleValue);
             const projectData = {
                 tag: document.getElementById('ongoingProjectTag').value.trim(),
-                title: document.getElementById('ongoingProjectTitle').value.trim(),
+                title: titleValue,
                 description: document.getElementById('ongoingProjectDescription').value.trim(),
                 meta_one: document.getElementById('ongoingProjectMetaOne').value.trim(),
                 meta_two: document.getElementById('ongoingProjectMetaTwo').value.trim(),
                 image: document.getElementById('ongoingProjectImage').value.trim(),
-                link: document.getElementById('ongoingProjectLink').value.trim(),
+                slug: slugValue,
+                detail: readOngoingDetailFromForm(),
                 date_created: new Date().toISOString().split('T')[0]
             };
 
@@ -1836,7 +2004,7 @@
                     <div class="meta-list">
                         <div><strong>Meta One:</strong> ${project.meta_one || project.metaOne || '-'}</div>
                         <div><strong>Meta Two:</strong> ${project.meta_two || project.metaTwo || '-'}</div>
-                        <div><strong>Link:</strong> ${project.link || '-'}</div>
+                        <div><strong>Slug:</strong> ${project.slug || '-'}</div>
                     </div>
                     <div class="card-actions">
                         <button class="btn btn-small btn-secondary" onclick="openOngoingProjectModal(${project.id})"><i class="fas fa-edit"></i> Edit</button>
@@ -2012,7 +2180,7 @@
         async function logout() {
             try {
                 await fetch('/api/admin/logout', { method: 'POST' });
-                window.location.href = '/admin_login.html';
+                window.location.href = '/admin';
             } catch (error) {
                 console.error(error);
             }

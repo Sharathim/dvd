@@ -7,7 +7,75 @@
     "meta_one": "Premium homes",
     "meta_two": "Surapet",
     "image": "static/images/slide1.jpg",
-    "link": "dv-emerald.html",
+    "slug": "dv-emerald",
+    "detail": {
+      "hero_image": "https://images.unsplash.com/photo-1536376072261-38c75010e6c9?auto=format&fit=crop&w=1600&q=80",
+      "cover_image": "https://images.unsplash.com/photo-1515263487990-61b07816b324?auto=format&fit=crop&w=900&q=80",
+      "location": "Surapet, Chennai",
+      "summary_title": "Great location to match the great value",
+      "summary_para_one": "The home of your dreams is finally here. DV Emerald is a thoughtfully designed project of six exclusive premium residential apartments.",
+      "summary_para_two": "Nestled in the heart of Surapet, DV Emerald blends practical luxury, intelligent planning, and long-term comfort.",
+      "details_intro": "DV Emerald offers more than a home. It is a lifestyle designed for quality, privacy, and elevated living.",
+      "stats": [
+        "6 Premium 2BHK Apartments",
+        "Stilt + 2 Floors",
+        "850 Sq.Ft",
+        "2 Units / Floor"
+      ],
+      "floor_plan_image": "static/images/emerald-floor-drawing2.jpg",
+      "catalogue_url": "#",
+      "highlights_intro": "Experience enhanced lifestyle at DV Emerald with vastu-compliant units, superior ventilation, and trusted community planning.",
+      "highlights": [
+        "Premium Community Design",
+        "Vastu Compliant",
+        "Secured And Safe Community",
+        "No Common Walls"
+      ],
+      "location_heading": "Highly Prosperous Location",
+      "location_subtitle": "Your gateway to urban convenience, only 10 minutes from Anna Nagar.",
+      "nearby_places": [
+        "Meridian Hospital",
+        "Saravana Stores",
+        "PVR Cinemas",
+        "Velammal New Gen School"
+      ],
+      "central_heading": "Centrally Located",
+      "central_tags": [
+        "Entertainment Hubs",
+        "Prominent Schools",
+        "Easy Connectivity",
+        "Healthcare Centres"
+      ],
+      "central_list_title": "Entertainment Hubs",
+      "central_list": [
+        "Sri Ganga Cinemas",
+        "PVR Cinemas",
+        "VR Mall"
+      ],
+      "availability_columns": [
+        "First Floor",
+        "Second Floor",
+        "Third Floor"
+      ],
+      "availability_rows": [
+        {
+          "label": "Front Side",
+          "values": [
+            "Available",
+            "Booked",
+            "Available"
+          ]
+        },
+        {
+          "label": "Rear Side",
+          "values": [
+            "Booked",
+            "Available",
+            "Booked"
+          ]
+        }
+      ]
+    },
     "date_created": "2026-04-22"
   },
   {
@@ -18,7 +86,27 @@
     "meta_one": "Modern living",
     "meta_two": "Quality build",
     "image": "static/images/slide2.jpg",
-    "link": "dv-marina.html",
+    "slug": "dv-marina",
+    "detail": {
+      "hero_image": "https://images.unsplash.com/photo-1600607687644-aac4c3eac7f4?auto=format&fit=crop&w=1600&q=80",
+      "cover_image": "https://images.unsplash.com/photo-1605146769289-440113cc3d00?auto=format&fit=crop&w=900&q=80",
+      "location": "Surapet, Chennai",
+      "summary_title": "Balanced design with dependable quality",
+      "summary_para_one": "DV Marina is a premium apartment project crafted for families who seek practical layouts and refined design.",
+      "summary_para_two": "Positioned in a well-connected zone of Surapet, the development brings convenience, lifestyle, and peace of mind.",
+      "details_intro": "Thoughtfully designed homes backed by quality engineering, security, and strong urban connectivity.",
+      "stats": [
+        "8 Premium Apartments",
+        "Stilt + 3 Floors",
+        "920 Sq.Ft",
+        "2 Units / Floor"
+      ],
+      "highlights": [
+        "Premium Interiors",
+        "Natural Ventilation",
+        "Secure Community"
+      ]
+    },
     "date_created": "2026-04-22"
   },
   {
@@ -29,7 +117,27 @@
     "meta_one": "Upcoming",
     "meta_two": "Family focused",
     "image": "static/images/slide3.jpg",
-    "link": "dv-empire.html",
+    "slug": "dv-empire",
+    "detail": {
+      "hero_image": "https://images.unsplash.com/photo-1502672023488-70e25813eb80?auto=format&fit=crop&w=1600&q=80",
+      "cover_image": "https://images.unsplash.com/photo-1560448204-603b3fc33ddc?auto=format&fit=crop&w=900&q=80",
+      "location": "Surapet, Chennai",
+      "summary_title": "A future-ready address for modern families",
+      "summary_para_one": "DV Empire is designed for urban families seeking strong connectivity, comfortable interiors, and reliable build quality.",
+      "summary_para_two": "With practical amenities and modern specifications, DV Empire offers the confidence of a trusted address.",
+      "details_intro": "Smart layouts, secure community planning, and superior material standards for long-term performance.",
+      "stats": [
+        "10 Apartments",
+        "Stilt + 3 Floors",
+        "950 Sq.Ft",
+        "2 Units / Floor"
+      ],
+      "highlights": [
+        "Optimized Floor Plans",
+        "Premium Finishes",
+        "Safe Neighborhood"
+      ]
+    },
     "date_created": "2026-04-22"
   }
 ]

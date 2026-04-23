@@ -378,6 +378,279 @@
     }
   };
 
+  const ONGOING_PROJECT_PREVIEW_KEY = "dv_ongoing_project_preview";
+
+  const toSlug = (value) => String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "") || "project";
+
+  const getOngoingProjectSlug = (item) => {
+    const explicitSlug = String(item.slug || "").trim();
+    if (explicitSlug) {
+      return toSlug(explicitSlug);
+    }
+
+    const legacyLink = String(item.link || "").trim();
+    if (legacyLink.endsWith(".html")) {
+      return toSlug(legacyLink.replace(/\.html$/i, ""));
+    }
+
+    return toSlug(item.title || "project");
+  };
+
+  const getOngoingPreviewProject = (selectedSlug) => {
+    try {
+      const rawPreview = sessionStorage.getItem(ONGOING_PROJECT_PREVIEW_KEY);
+      if (!rawPreview) {
+        return null;
+      }
+
+      const parsed = JSON.parse(rawPreview);
+      if (!parsed || typeof parsed !== "object") {
+        return null;
+      }
+
+      const previewSlug = getOngoingProjectSlug(parsed);
+      if (!previewSlug || previewSlug !== selectedSlug) {
+        return null;
+      }
+
+      return parsed;
+    } catch {
+      return null;
+    }
+  };
+
+  const toArray = (value) => Array.isArray(value) ? value.filter(Boolean).map((entry) => String(entry).trim()).filter(Boolean) : [];
+
+  const getOngoingProjectDetail = (project) => {
+    const detail = (project && typeof project.detail === "object" && project.detail) ? project.detail : {};
+    const stats = toArray(detail.stats).slice(0, 6);
+    const highlights = toArray(detail.highlights).slice(0, 8);
+    const nearbyPlaces = toArray(detail.nearby_places).slice(0, 8);
+    const centralTags = toArray(detail.central_tags).slice(0, 8);
+    const centralList = toArray(detail.central_list).slice(0, 10);
+    const availabilityColumns = toArray(detail.availability_columns).slice(0, 4);
+    const availabilityRows = Array.isArray(detail.availability_rows)
+      ? detail.availability_rows
+        .map((row) => {
+          const label = String(row && row.label ? row.label : "").trim();
+          const values = Array.isArray(row && row.values) ? row.values.map((entry) => String(entry || "").trim()) : [];
+          if (!label || !values.length) {
+            return null;
+          }
+          return { label, values };
+        })
+        .filter(Boolean)
+      : [];
+
+    return {
+      heroImage: detail.hero_image || project.image || "",
+      coverImage: detail.cover_image || project.image || "",
+      location: detail.location || project.meta_two || "Not specified",
+      summaryTitle: detail.summary_title || "Great location to match the great value",
+      summaryParaOne: detail.summary_para_one || project.description || "",
+      summaryParaTwo: detail.summary_para_two || "",
+      detailsIntro: detail.details_intro || "",
+      stats,
+      floorPlanImage: detail.floor_plan_image || "",
+      catalogueUrl: detail.catalogue_url || "",
+      highlightsIntro: detail.highlights_intro || "",
+      highlights,
+      locationHeading: detail.location_heading || "Highly Prosperous Location",
+      locationSubtitle: detail.location_subtitle || "",
+      nearbyPlaces,
+      centralHeading: detail.central_heading || "Centrally Located",
+      centralTags,
+      centralListTitle: detail.central_list_title || "Nearby Highlights",
+      centralList,
+      centralImage: detail.central_image || project.image || "",
+      availabilityColumns,
+      availabilityRows
+    };
+  };
+
+  const buildAvailabilityTable = (detail) => {
+    if (!detail.availabilityColumns.length || !detail.availabilityRows.length) {
+      return "";
+    }
+
+    const maxColumns = detail.availabilityColumns.length;
+    const headCells = detail.availabilityColumns.map((column) => `<th>${toSafeText(column)}</th>`).join("");
+    const rowHtml = detail.availabilityRows.map((row) => {
+      const values = row.values.slice(0, maxColumns);
+      while (values.length < maxColumns) {
+        values.push("-");
+      }
+
+      return `
+        <tr>
+          <td>${toSafeText(row.label)}</td>
+          ${values.map((value) => `<td>${toSafeText(value)}</td>`).join("")}
+        </tr>`;
+    }).join("");
+
+    return `
+      <section class="section-band"><p>Availability Status</p></section>
+      <section class="section-tight">
+        <div class="container">
+          <table class="availability-table">
+            <thead>
+              <tr>
+                <th></th>
+                ${headCells}
+              </tr>
+            </thead>
+            <tbody>
+              ${rowHtml}
+            </tbody>
+          </table>
+        </div>
+      </section>`;
+  };
+
+  const renderOngoingProjectDetailPage = (project) => {
+    const main = document.querySelector("main");
+    if (!main || !project) {
+      return;
+    }
+
+    const title = toSafeText(project.title || "Project");
+    const detail = getOngoingProjectDetail(project);
+    const heroImage = toSafeText(detail.heroImage);
+    const coverImage = toSafeText(detail.coverImage);
+    const location = toSafeText(detail.location);
+    const summaryTitle = toSafeText(detail.summaryTitle);
+    const summaryParaOne = toSafeText(detail.summaryParaOne);
+    const summaryParaTwo = toSafeText(detail.summaryParaTwo);
+    const detailsIntro = toSafeText(detail.detailsIntro);
+    const highlightsIntro = toSafeText(detail.highlightsIntro);
+
+    const statsHtml = detail.stats.length
+      ? `<div class="stats-grid stats-grid-spaced">${detail.stats.map((item) => `<div class="stat">${toSafeText(item)}</div>`).join("")}</div>`
+      : "";
+
+    const highlightsHtml = detail.highlights.length
+      ? `<div class="container stats-grid stats-grid-spaced">${detail.highlights.map((item) => `<div class="stat">${toSafeText(item)}</div>`).join("")}</div>`
+      : "";
+
+    const nearbyHtml = detail.nearbyPlaces.length
+      ? `<div class="container stats-grid stats-grid-spaced">${detail.nearbyPlaces.map((item) => `<div class="stat">${toSafeText(item)}</div>`).join("")}</div>`
+      : "";
+
+    const centralTagsHtml = detail.centralTags.length
+      ? detail.centralTags.map((item) => `<span>${toSafeText(item)}</span>`).join("")
+      : "";
+
+    const centralListHtml = detail.centralList.length
+      ? detail.centralList.map((item) => `<li>${toSafeText(item)}</li>`).join("")
+      : "<li>Not specified</li>";
+
+    const catalogueUrl = toSafeText(detail.catalogueUrl || "#");
+    const floorPlanImage = toSafeText(detail.floorPlanImage);
+    const centralImage = toSafeText(detail.centralImage);
+
+    const pageHero = document.querySelector(".page-hero");
+    if (pageHero) {
+      pageHero.style.backgroundImage = heroImage ? `url('${heroImage}')` : "none";
+    }
+    const pageHeroTitle = document.querySelector(".page-hero-content h1");
+    if (pageHeroTitle) {
+      pageHeroTitle.textContent = project.title || "Ongoing Project";
+    }
+
+    document.title = `${project.title || "Ongoing Project"} | DV Dream Homes`;
+    const descriptionMeta = document.querySelector('meta[name="description"]');
+    if (descriptionMeta) {
+      descriptionMeta.setAttribute("content", project.description || "DV Dream Homes ongoing project details.");
+    }
+
+    main.innerHTML = `
+      <section class="section">
+        <div class="container" style="margin-bottom: 1rem;">
+          <a href="ongoing-projects.html" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back to Ongoing Projects</a>
+        </div>
+        <div class="container split-card">
+          <div class="image-wrap">
+            ${coverImage ? `<img src="${coverImage}" alt="${title} main image">` : ""}
+          </div>
+          <div>
+            <h3 class="project-headline">${title}</h3>
+            <h4>${location}</h4>
+            <p><strong>${summaryTitle}</strong></p>
+            <p>${summaryParaOne}</p>
+            ${summaryParaTwo ? `<p>${summaryParaTwo}</p>` : ""}
+          </div>
+        </div>
+      </section>
+
+      <section class="section-band"><p>Project Details</p></section>
+
+      <section class="section-tight">
+        <div class="container section-copy text-center">
+          ${detailsIntro ? `<p>${detailsIntro}</p>` : ""}
+          ${statsHtml}
+        </div>
+      </section>
+
+      ${floorPlanImage ? `
+        <section class="section">
+          <div class="container section-title">
+            <p class="kicker">Floor Plan</p>
+            <div class="floor-image">
+              <img src="${floorPlanImage}" alt="${title} floor plan">
+            </div>
+          </div>
+        </section>` : ""}
+
+      ${catalogueUrl && catalogueUrl !== "#" ? `
+        <section class="section-band"><p>Catalogue</p></section>
+        <section class="section-tight">
+          <div class="container text-center">
+            <a href="${catalogueUrl}" class="btn btn-red" target="_blank" rel="noopener noreferrer"><i class="fas fa-file-arrow-down"></i> Download Catalogue (PDF)</a>
+          </div>
+        </section>` : ""}
+
+      ${(detail.highlights.length || highlightsIntro) ? `
+        <section class="section-band"><p>Key Project Highlights</p></section>
+        <section class="section-tight">
+          <div class="container section-copy text-center">
+            ${highlightsIntro ? `<p>${highlightsIntro}</p>` : ""}
+          </div>
+          ${highlightsHtml}
+        </section>` : ""}
+
+      ${(detail.nearbyPlaces.length || detail.locationSubtitle) ? `
+        <section class="section section-alt">
+          <div class="container section-title">
+            <h2>${toSafeText(detail.locationHeading)}</h2>
+            ${detail.locationSubtitle ? `<p>${toSafeText(detail.locationSubtitle)}</p>` : ""}
+          </div>
+          ${nearbyHtml}
+        </section>` : ""}
+
+      ${(detail.centralTags.length || detail.centralList.length) ? `
+        <section class="section">
+          <div class="container section-title">
+            <h2>${toSafeText(detail.centralHeading)}</h2>
+          </div>
+          <div class="container central-grid">
+            <div>
+              ${centralTagsHtml ? `<div class="central-tags">${centralTagsHtml}</div>` : ""}
+              ${centralImage ? `<img src="${centralImage}" alt="${title} surroundings">` : ""}
+            </div>
+            <div>
+              <h4>${toSafeText(detail.centralListTitle)}</h4>
+              <ul>${centralListHtml}</ul>
+            </div>
+          </div>
+        </section>` : ""}
+
+      ${buildAvailabilityTable(detail)}
+    `;
+  };
+
   const buildOngoingProjectCard = (item) => {
     const title = toSafeText(item.title || "Project");
     const tag = toSafeText(item.tag || "Ongoing");
@@ -385,7 +658,7 @@
     const metaOne = toSafeText(item.meta_one || "");
     const metaTwo = toSafeText(item.meta_two || "");
     const image = toSafeText(item.image || "");
-    const link = toSafeText(item.link || "#");
+    const link = `ongoing-projects.html?project=${encodeURIComponent(getOngoingProjectSlug(item))}`;
 
     return `
       <article class="project-card reveal visible">
@@ -410,6 +683,21 @@
     }
 
     const projects = await loadOngoingProjectsData();
+    const queryParams = new URLSearchParams(window.location.search);
+    const selectedSlug = toSlug(queryParams.get("project") || "");
+    const isPreviewMode = queryParams.get("preview") === "1";
+
+    if (selectedSlug) {
+      const apiProject = projects.find((item) => getOngoingProjectSlug(item) === selectedSlug);
+      const previewProject = isPreviewMode ? getOngoingPreviewProject(selectedSlug) : null;
+      const selectedProject = previewProject || apiProject;
+
+      if (selectedProject) {
+        renderOngoingProjectDetailPage(selectedProject);
+        return;
+      }
+    }
+
     if (!projects.length) {
       grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #666;">No ongoing projects yet.</p>';
       return;

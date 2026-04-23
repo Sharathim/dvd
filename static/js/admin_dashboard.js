@@ -512,7 +512,7 @@ function setupModalEvents() {
 function setupAuth() {
     const loggedIn = localStorage.getItem(AUTH_KEYS.loggedIn) === 'true' || localStorage.getItem(AUTH_KEYS.legacyLoggedIn) === 'true';
     if (!loggedIn) {
-        window.location.href = 'admin_login.html';
+        window.location.href = '/admin';
         return false;
     }
 
@@ -532,7 +532,7 @@ function setupAuth() {
             localStorage.removeItem(AUTH_KEYS.username);
             localStorage.removeItem(AUTH_KEYS.legacyLoggedIn);
             localStorage.removeItem(AUTH_KEYS.legacyUsername);
-            window.location.href = 'admin_login.html';
+            window.location.href = '/admin';
         });
     }
 

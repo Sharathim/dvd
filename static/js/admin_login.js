@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (localStorage.getItem(AUTH_KEYS.loggedIn) === 'true' || localStorage.getItem(AUTH_KEYS.legacyLoggedIn) === 'true') {
         localStorage.setItem(AUTH_KEYS.loggedIn, 'true');
-        window.location.href = 'admin_dashboard.html';
+        window.location.href = '/admin/dashboard';
         return;
     }
 
@@ -210,7 +210,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (isValid) {
                 localStorage.setItem(AUTH_KEYS.loggedIn, 'true');
                 localStorage.setItem(AUTH_KEYS.username, username);
-                window.location.href = 'admin_dashboard.html';
+                window.location.href = '/admin/dashboard';
                 return;
             }
 

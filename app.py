@@ -1,10 +1,11 @@
-from flask import Flask, abort, jsonify, render_template, send_from_directory, request, session
+from flask import Flask, abort, jsonify, render_template, send_from_directory, request, session, redirect
 from pathlib import Path
 import json
 from functools import wraps
 from email.message import EmailMessage
 import os
 import smtplib
+import re
 from uuid import uuid4
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
@@ -18,12 +19,43 @@ UPLOADS_DIR = BASE_DIR / "static" / "assets" / "images" / "admin-uploads"
 ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".avif"}
 CONTACT_TO_EMAIL = "rathisha273@gmail.com"
 
+LEGACY_ONGOING_DETAIL_ROUTES = {
+    "dv-emerald.html": "dv-emerald",
+    "dv-marina.html": "dv-marina",
+    "dv-empire.html": "dv-empire"
+}
+
+LEGACY_ADMIN_TEMPLATE_ROUTES = {
+    "admin_login.html",
+    "admin_dashboard.html"
+}
+
 load_dotenv(BASE_DIR / ".env", override=True)
 
 
 @app.route("/")
 def home():
     return render_template("index.html")
+
+
+@app.route("/admin")
+def admin_entry():
+    if session.get("authenticated"):
+        return redirect("/admin/dashboard", code=302)
+    return render_template("admin_login.html")
+
+
+@app.route("/admin/dashboard")
+def admin_dashboard():
+    if not session.get("authenticated"):
+        return redirect("/admin", code=302)
+    return render_template("admin_dashboard.html")
+
+
+@app.route("/admin_login.html")
+@app.route("/admin_dashboard.html")
+def admin_legacy_routes():
+    return redirect("/admin", code=302)
 
 
 @app.route("/favicon.ico")
@@ -36,6 +68,13 @@ def render_page(page: str):
     # Keep old .html-style URLs working without changing existing links.
     if not page.endswith(".html"):
         abort(404)
+
+    if page in LEGACY_ADMIN_TEMPLATE_ROUTES:
+        return redirect("/admin", code=302)
+
+    legacy_slug = LEGACY_ONGOING_DETAIL_ROUTES.get(page)
+    if legacy_slug:
+        return redirect(f"/ongoing-projects.html?project={legacy_slug}", code=302)
 
     template_path = BASE_DIR / "templates" / page
     if not template_path.is_file():
@@ -58,6 +97,11 @@ def _read_json_array(filename: str):
         payload = json.load(handle)
 
     return payload if isinstance(payload, list) else []
+
+
+def _slugify(value: str) -> str:
+    cleaned = re.sub(r"[^a-z0-9]+", "-", str(value or "").lower()).strip("-")
+    return cleaned or "project"
 
 
 def _write_json_array(filename: str, data: list):
@@ -382,6 +426,7 @@ def ongoing_projects_endpoint():
         ongoing_projects = _read_json_array("ongoing_projects.json")
 
         new_id = max([project.get("id", 0) for project in ongoing_projects], default=0) + 1
+        slug = str(data.get("slug", "")).strip() or _slugify(data.get("title", ""))
 
         new_ongoing_project = {
             "id": new_id,
@@ -391,7 +436,8 @@ def ongoing_projects_endpoint():
             "meta_one": data.get("meta_one", ""),
             "meta_two": data.get("meta_two", ""),
             "image": data.get("image", ""),
-            "link": data.get("link", ""),
+            "slug": _slugify(slug),
+            "detail": data.get("detail", {}) if isinstance(data.get("detail", {}), dict) else {},
             "date_created": data.get("date_created", "")
         }
 
@@ -416,6 +462,7 @@ def ongoing_project_detail(project_id):
     if request.method == "PUT":
         data = request.get_json()
         project = ongoing_projects[project_index]
+        slug_value = str(data.get("slug", project.get("slug", ""))).strip() or _slugify(data.get("title", project.get("title", "")))
         project.update({
             "tag": data.get("tag", project.get("tag")),
             "title": data.get("title", project.get("title")),
@@ -423,7 +470,8 @@ def ongoing_project_detail(project_id):
             "meta_one": data.get("meta_one", project.get("meta_one")),
             "meta_two": data.get("meta_two", project.get("meta_two")),
             "image": data.get("image", project.get("image")),
-            "link": data.get("link", project.get("link"))
+            "slug": _slugify(slug_value),
+            "detail": data.get("detail", project.get("detail", {})) if isinstance(data.get("detail", project.get("detail", {})), dict) else project.get("detail", {})
         })
         _write_json_array("ongoing_projects.json", ongoing_projects)
         return jsonify(project), 200
