@@ -8,7 +8,7 @@
     "completed_in": "February 2023",
     "units": "6",
     "built_up_area": "4,125 sq. ft.",
-    "image": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=900&q=80",
+    "image": "static/assets/images/admin-uploads/completep1-93fb6c6982.jpg",
     "date_created": "2023-02-01"
   },
   {
@@ -20,7 +20,7 @@
     "completed_in": "February 2024",
     "units": "3",
     "built_up_area": "3,480 sq. ft.",
-    "image": "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=900&q=80",
+    "image": "static/assets/images/admin-uploads/completep2-bcaf91b505.jpg",
     "date_created": "2024-02-01"
   },
   {
@@ -32,7 +32,7 @@
     "completed_in": "December 2024",
     "units": "Not specified",
     "built_up_area": "3,200 sq. ft.",
-    "image": "https://images.unsplash.com/photo-1515263487990-61b07816b324?auto=format&fit=crop&w=900&q=80",
+    "image": "static/assets/images/admin-uploads/commericial_build4-444aa02cde.png",
     "date_created": "2024-12-01"
   },
   {
@@ -44,7 +44,7 @@
     "completed_in": "April 2024",
     "units": "Not specified",
     "built_up_area": "2,320 sq. ft.",
-    "image": "https://images.unsplash.com/photo-1560185008-b033106af5c3?auto=format&fit=crop&w=900&q=80",
+    "image": "static/assets/images/admin-uploads/empire_edit3-e913797a9f.jpg",
     "date_created": "2024-04-01"
   }
 ]
