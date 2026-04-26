@@ -206,20 +206,34 @@ function createTestimonialCardHTML(item) {
 }
 
 function renderProjects() {
-    const list = document.getElementById('projectsList');
-    if (!list) {
-        return;
-    }
-
+    const ongoingList = document.getElementById('ongoingProjectsList');
+    const completedList = document.getElementById('completedProjectsList');
+    
     const projects = loadStore(STORAGE_KEYS.projects);
-    if (!projects.length) {
-        list.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: #666;"><i class="fas fa-building" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i><p>No projects have been added yet.</p></div>';
-        return;
+    const ongoingProjects = projects.filter(function (p) { return p.status === 'ongoing'; });
+    const completedProjects = projects.filter(function (p) { return p.status === 'completed'; });
+
+    // Render ongoing projects
+    if (ongoingList) {
+        if (!ongoingProjects.length) {
+            ongoingList.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: #666;"><i class="fas fa-building" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i><p>No ongoing projects have been added yet.</p></div>';
+        } else {
+            ongoingList.innerHTML = ongoingProjects.map(function (project) {
+                return `<div class="card" data-id="${project.id}">${createProjectCardHTML(project)}</div>`;
+            }).join('');
+        }
     }
 
-    list.innerHTML = projects.map(function (project) {
-        return `<div class="card" data-id="${project.id}">${createProjectCardHTML(project)}</div>`;
-    }).join('');
+    // Render completed projects
+    if (completedList) {
+        if (!completedProjects.length) {
+            completedList.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: #666;"><i class="fas fa-building" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i><p>No completed projects have been added yet.</p></div>';
+        } else {
+            completedList.innerHTML = completedProjects.map(function (project) {
+                return `<div class="card" data-id="${project.id}">${createProjectCardHTML(project)}</div>`;
+            }).join('');
+        }
+    }
 }
 
 function renderTestimonials() {
@@ -239,7 +253,33 @@ function renderTestimonials() {
     }).join('');
 }
 
+function updateDashboardStats() {
+    const projects = loadStore(STORAGE_KEYS.projects);
+    const testimonials = loadStore(STORAGE_KEYS.testimonials);
+
+    // Count ongoing and completed projects
+    const ongoingCount = projects.filter(function (p) { return p.status === 'ongoing'; }).length;
+    const completedCount = projects.filter(function (p) { return p.status === 'completed'; }).length;
+    const testimonialCount = testimonials.length;
+
+    // Update stat cards
+    const ongoingElement = document.getElementById('ongoingProjects');
+    const completedElement = document.getElementById('completedProjects');
+    const totalTestimonialsElement = document.getElementById('totalTestimonials');
+
+    if (ongoingElement) {
+        ongoingElement.textContent = ongoingCount;
+    }
+    if (completedElement) {
+        completedElement.textContent = completedCount;
+    }
+    if (totalTestimonialsElement) {
+        totalTestimonialsElement.textContent = testimonialCount;
+    }
+}
+
 function renderAll() {
+    updateDashboardStats();
     renderProjects();
     renderTestimonials();
 }

@@ -1,0 +1,250 @@
+<!-- DV Dream Homes AI Chatbot Widget Integration Guide -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot Widget Integration Guide</title>
+  <style>
+    body {
+      font-family: "DM Sans", Arial, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      color: #2c2c2c;
+      line-height: 1.6;
+    }
+    h1 { color: #0b0b0b; }
+    h2 { color: #171717; margin-top: 30px; }
+    code {
+      background: #f6f6f3;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      color: #c8102e;
+    }
+    pre {
+      background: #f6f6f3;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      border-left: 3px solid #f5c400;
+    }
+    .highlight {
+      background: rgba(245, 196, 0, 0.18);
+      padding: 12px;
+      border-radius: 6px;
+      margin: 20px 0;
+    }
+    .step {
+      margin: 20px 0;
+      padding: 16px;
+      background: #f6f6f3;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🤖 DV Dream Homes AI Chatbot Widget Integration</h1>
+
+<p>This guide shows how to integrate the AI chatbot widget into your DV Dream Homes website.</p>
+
+<div class="highlight">
+  <strong>✓ Features:</strong> Gemini API integration, conversation history, responsive design, matches your site design perfectly
+</div>
+
+---
+
+<h2>📋 Prerequisites</h2>
+
+<p>You need a Google Gemini API key. Get one for free at:</p>
+<p><code>https://makersuite.google.com/app/apikey</code></p>
+
+---
+
+<h2>🚀 Quick Start (3 Steps)</h2>
+
+<div class="step">
+  <h3>Step 1: Add the CSS to your page</h3>
+  <p>In the <code>&lt;head&gt;</code> section of your HTML file, add:</p>
+  <pre>&lt;link rel="stylesheet" href="static/css/chatbot-widget.css"&gt;</pre>
+</div>
+
+<div class="step">
+  <h3>Step 2: Add the JavaScript to your page</h3>
+  <p>At the end of the <code>&lt;body&gt;</code> section, add:</p>
+  <pre>&lt;script src="static/js/chatbot-widget.js"&gt;&lt;/script&gt;</pre>
+</div>
+
+<div class="step">
+  <h3>Step 3: Set your API Key</h3>
+  <p>Open <code>static/js/chatbot-widget.js</code> and find this line (around line 135):</p>
+  <pre>const API_KEY = 'YOUR_GEMINI_API_KEY';</pre>
+  <p>Replace it with your actual Gemini API key:</p>
+  <pre>const API_KEY = 'sk-1234567890abc...';</pre>
+</div>
+
+---
+
+<h2>✅ Integration Example</h2>
+
+<p>Here's where to add the links in your HTML template:</p>
+
+<pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;link rel="stylesheet" href="static/css/site.css"&gt;
+  
+  &lt;!-- ADD THIS LINE --&gt;
+  &lt;link rel="stylesheet" href="static/css/chatbot-widget.css"&gt;
+  
+&lt;/head&gt;
+&lt;body data-page="home"&gt;
+
+  &lt;!-- Your existing content here --&gt;
+
+  &lt;script src="static/js/site.js"&gt;&lt;/script&gt;
+  
+  &lt;!-- ADD THIS LINE --&gt;
+  &lt;script src="static/js/chatbot-widget.js"&gt;&lt;/script&gt;
+  
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+
+---
+
+<h2>🎨 Widget Appearance</h2>
+
+<ul>
+  <li><strong>Floating Button:</strong> Bottom-right corner, gold color (#f5c400), smooth hover animation</li>
+  <li><strong>Chat Panel:</strong> 420px width on desktop, responsive on mobile, smooth fade-in animation</li>
+  <li><strong>Color Scheme:</strong> Matches your site perfectly (gold, ink, white, coal)</li>
+  <li><strong>Fonts:</strong> Uses DM Sans (your body font)</li>
+</ul>
+
+---
+
+<h2>⚙️ Customization</h2>
+
+<h3>Change the greeting message</h3>
+<p>In <code>chatbot-widget.js</code>, find the line in the <code>createUI()</code> method:</p>
+<pre>&lt;div class="message-bubble bot"&gt;
+  Hi! 👋 I'm the DV Dream Homes assistant. How can I help you today?
+&lt;/div&gt;</pre>
+<p>Edit the text to your preferred greeting.</p>
+
+<h3>Change the button position</h3>
+<p>In <code>chatbot-widget.css</code>, modify these values:</p>
+<pre>.chat-button-container {
+  bottom: 28px;  /* Distance from bottom */
+  right: 28px;   /* Distance from right */
+}</pre>
+
+<h3>Change the button icon</h3>
+<p>In <code>chatbot-widget.js</code>, find this line in <code>createUI()</code>:</p>
+<pre>button.innerHTML = '💬';</pre>
+<p>Use any emoji or HTML you want. Examples: 🤖 💭 ❓ 🎯</p>
+
+<h3>Adjust panel size</h3>
+<p>In <code>chatbot-widget.css</code>, modify:</p>
+<pre>.chat-panel {
+  max-width: 420px;  /* Width on desktop */
+  height: 600px;     /* Height */
+}</pre>
+
+---
+
+<h2>🔧 System Prompt</h2>
+
+<p>The chatbot is programmed with information about DV Dream Homes. You can customize this in <code>chatbot-widget.js</code>:</p>
+
+<p>Find the <code>systemPrompt</code> variable in the constructor and edit it to match your current business details.</p>
+
+---
+
+<h2>🐛 Troubleshooting</h2>
+
+<h3>Chatbot not appearing?</h3>
+<ul>
+  <li>Check that both files are linked correctly in your HTML</li>
+  <li>Check browser console for errors (F12 → Console tab)</li>
+  <li>Make sure your API key is set</li>
+</ul>
+
+<h3>API key error?</h3>
+<ul>
+  <li>Check you have a valid Gemini API key from Google</li>
+  <li>Check there are no extra spaces in your API key</li>
+  <li>Verify the key has appropriate permissions</li>
+</ul>
+
+<h3>Messages not sending?</h3>
+<ul>
+  <li>Check your API key is correct</li>
+  <li>Check your internet connection</li>
+  <li>Open developer console (F12) to see specific error messages</li>
+</ul>
+
+---
+
+<h2>📱 Mobile Responsive</h2>
+
+<p>The widget automatically adapts for mobile:</p>
+<ul>
+  <li>Panel height changes to 70vh on mobile</li>
+  <li>Button and panel repositioned for smaller screens</li>
+  <li>Touch-friendly sizing</li>
+</ul>
+
+---
+
+<h2>⚡ Performance Notes</h2>
+
+<ul>
+  <li><strong>Load time:</strong> ~50KB total (CSS + JS)</li>
+  <li><strong>API calls:</strong> One call per message sent to Gemini</li>
+  <li><strong>Memory:</strong> Keeps last 10 messages in history for context</li>
+  <li><strong>No dependencies:</strong> Pure vanilla JavaScript, no frameworks needed</li>
+</ul>
+
+---
+
+<h2>🔐 Security & Privacy</h2>
+
+<ul>
+  <li><strong>API Key:</strong> Store in environment variable on production (not in client code)</li>
+  <li><strong>Conversation:</strong> Stored only in browser memory, not on any server</li>
+  <li><strong>Data:</strong> Messages sent to Google Gemini API only</li>
+</ul>
+
+---
+
+<h2>📝 Files Included</h2>
+
+<ul>
+  <li><strong>chatbot-widget.css</strong> - All styling (fully responsive)</li>
+  <li><strong>chatbot-widget.js</strong> - Full functionality (API calls, UI logic)</li>
+  <li>This file - Integration guide</li>
+</ul>
+
+---
+
+<h2>✨ Next Steps</h2>
+
+<ol>
+  <li>Get your Gemini API key</li>
+  <li>Add the two links to your HTML files</li>
+  <li>Update the API key in the JavaScript file</li>
+  <li>Test the chatbot by clicking the button</li>
+  <li>Customize as needed</li>
+</ol>
+
+<div class="highlight">
+  <strong>✓ That's it!</strong> Your AI chatbot is now live on your website.
+</div>
+
+</body>
+</html>

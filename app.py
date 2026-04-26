@@ -7,6 +7,7 @@ import os
 import smtplib
 import re
 from uuid import uuid4
+from urllib import request as urlrequest, error as urlerror
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
 
@@ -168,6 +169,70 @@ def _send_contact_email(name: str, email: str, subject: str, message: str):
         server.send_message(email_message)
 
 
+def _call_gemini_chatbot(prompt: str) -> str:
+    # Reload .env at call time so key updates are picked up without a process restart.
+    load_dotenv(BASE_DIR / ".env", override=False)
+    api_key = os.getenv("DV_GEMINI_API_KEY", "").strip()
+    model = os.getenv("DV_GEMINI_MODEL", "gemini-flash-lite-latest").strip() or "gemini-flash-lite-latest"
+
+    if not api_key:
+        raise RuntimeError("DV_GEMINI_API_KEY is not configured")
+
+    endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+    payload = {
+        "contents": [
+            {
+                "role": "user",
+                "parts": [{"text": prompt}]
+            }
+        ],
+        "generationConfig": {
+            "temperature": 0.2,
+            "topP": 0.9,
+            "topK": 30,
+            "maxOutputTokens": 150,
+        },
+        "safetySettings": [
+            {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+            {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+            {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+            {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+        ],
+    }
+
+    request_body = json.dumps(payload).encode("utf-8")
+    http_request = urlrequest.Request(
+        endpoint,
+        data=request_body,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+
+    try:
+        with urlrequest.urlopen(http_request, timeout=25) as response:
+            response_payload = response.read().decode("utf-8")
+    except urlerror.HTTPError as exc:
+        raise RuntimeError("Gemini API request failed") from exc
+    except Exception as exc:
+        raise RuntimeError("Gemini API connection failed") from exc
+
+    try:
+        payload_json = json.loads(response_payload)
+        response_text = payload_json["candidates"][0]["content"]["parts"][0]["text"].strip()
+    except (ValueError, KeyError, IndexError, TypeError) as exc:
+        raise RuntimeError("Gemini API returned an invalid response") from exc
+
+    if response_text.startswith("DV Assistant:"):
+        response_text = response_text[len("DV Assistant:"):].strip()
+    elif response_text.startswith("Assistant:"):
+        response_text = response_text[len("Assistant:"):].strip()
+
+    if not response_text:
+        raise RuntimeError("Gemini API returned an empty response")
+
+    return response_text
+
+
 def _is_allowed_image(filename: str) -> bool:
     extension = Path(filename).suffix.lower()
     return extension in ALLOWED_IMAGE_EXTENSIONS
@@ -241,6 +306,26 @@ def api_contact():
         return jsonify({"ok": False, "error": "Failed to send message. Please try again."}), 502
 
     return jsonify({"ok": True}), 200
+
+
+@app.route("/api/chatbot", methods=["POST"])
+def api_chatbot():
+    data = request.get_json(silent=True) or {}
+    prompt = str(data.get("prompt", "")).strip()
+
+    if not prompt:
+        return jsonify({"ok": False, "error": "Prompt is required."}), 400
+
+    try:
+        response_text = _call_gemini_chatbot(prompt)
+    except RuntimeError as exc:
+        if "DV_GEMINI_API_KEY" in str(exc):
+            return jsonify({"ok": False, "error": "Chatbot is not configured."}), 500
+        return jsonify({"ok": False, "error": "Chatbot service is unavailable."}), 502
+    except Exception:
+        return jsonify({"ok": False, "error": "Chatbot service is unavailable."}), 502
+
+    return jsonify({"ok": True, "text": response_text}), 200
 
 
 # ===== ADMIN AUTHENTICATION =====

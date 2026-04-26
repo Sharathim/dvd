@@ -320,7 +320,7 @@
 
         .card-image {
             width: 100%;
-            aspect-ratio: 16 / 10;
+            height: clamp(140px, 18vw, 200px);
             object-fit: cover;
             border-radius: 6px;
             margin-bottom: 1rem;
@@ -843,6 +843,12 @@
             margin-top: -0.2rem;
         }
 
+        .image-privacy-note {
+            font-size: 0.76rem;
+            color: var(--muted);
+            opacity: 0.9;
+        }
+
         .default-gallery {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
@@ -890,6 +896,10 @@
             display: none;
         }
 
+        .mobile-only {
+            display: none;
+        }
+
         .modal {
             border-radius: 16px;
             border: 1px solid rgba(0, 0, 0, 0.08);
@@ -907,6 +917,7 @@
                 color: #1f2733;
                 border-color: rgba(245, 196, 0, 0.85);
                 box-shadow: 0 5px 14px rgba(0, 0, 0, 0.15);
+                margin-left: auto;
             }
 
             .sidebar {
@@ -993,13 +1004,24 @@
             }
 
             .header-user {
-                margin-left: auto;
-                width: auto;
-                justify-content: flex-end;
+                display: none;
             }
 
             .user-info {
                 overflow-wrap: anywhere;
+            }
+
+            .mobile-only {
+                display: list-item;
+            }
+
+            .sidebar-logout-link {
+                color: var(--red) !important;
+                font-weight: 600;
+            }
+
+            .sidebar-logout-link i {
+                color: var(--red) !important;
             }
         }
 
@@ -1055,7 +1077,7 @@
             }
 
             .card-image {
-                aspect-ratio: 4 / 3;
+                height: clamp(132px, 38vw, 180px);
             }
         }
     </style>
@@ -1090,6 +1112,9 @@
                 </a></li>
                 <li><a href="#" data-tab="testimonials" class="nav-link">
                     <i class="fas fa-quote-left"></i> Testimonials
+                </a></li>
+                <li class="mobile-only"><a href="#" id="logoutBtnMobile" class="sidebar-logout-link">
+                    <i class="fas fa-sign-out-alt"></i> Logout
                 </a></li>
             </ul>
         </nav>
@@ -1203,8 +1228,9 @@
                             <button type="button" class="btn btn-secondary btn-small" id="uploadOngoingImageBtn"><i class="fas fa-upload"></i> Upload Local</button>
                             <input type="file" id="ongoingImageUpload" accept="image/*" hidden>
                         </div>
-                        <input type="text" id="ongoingProjectImage" class="image-value" placeholder="Upload local image or choose one default image" readonly>
-                        <p class="image-help">Choose a default project image (internet source):</p>
+                        <input type="hidden" id="ongoingProjectImage">
+                        <p class="image-help">Choose one option: default image or local upload.</p>
+                        <p class="image-privacy-note">Selected image path is hidden for security.</p>
                         <div class="default-gallery" id="ongoingDefaultGallery"></div>
                         <img id="ongoingImagePreview" class="selected-image-preview hidden" alt="Ongoing project preview">
                     </div>
@@ -1321,8 +1347,9 @@
                             <button type="button" class="btn btn-secondary btn-small" id="uploadCompletedImageBtn"><i class="fas fa-upload"></i> Upload Local</button>
                             <input type="file" id="completedImageUpload" accept="image/*" hidden>
                         </div>
-                        <input type="text" id="completedProjectImage" class="image-value" placeholder="Upload local image or choose one default image" readonly>
-                        <p class="image-help">Choose a default project image (internet source):</p>
+                        <input type="hidden" id="completedProjectImage">
+                        <p class="image-help">Choose one option: default image or local upload.</p>
+                        <p class="image-privacy-note">Selected image path is hidden for security.</p>
                         <div class="default-gallery" id="completedDefaultGallery"></div>
                         <img id="completedImagePreview" class="selected-image-preview hidden" alt="Completed project preview">
                     </div>
@@ -1468,22 +1495,56 @@
                 }
             });
 
-            document.getElementById('logoutBtn').addEventListener('click', logout);
-            document.getElementById('ongoingProjectForm').addEventListener('submit', saveOngoingProject);
-            document.getElementById('addOngoingProjectBtn').addEventListener('click', () => openOngoingProjectModal());
-            document.getElementById('completedProjectForm').addEventListener('submit', saveCompletedProject);
-            document.getElementById('addCompletedProjectBtn').addEventListener('click', () => openCompletedProjectModal());
-            document.getElementById('testimonialForm').addEventListener('submit', saveTestimonial);
-            document.getElementById('addTestimonialBtn').addEventListener('click', () => openTestimonialModal());
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) logoutBtn.addEventListener('click', logout);
 
-            const uploadOngoingImageBtn = document.getElementById('uploadOngoingImageBtn');
-            const ongoingImageUpload = document.getElementById('ongoingImageUpload');
-            if (uploadOngoingImageBtn && ongoingImageUpload) {
-                uploadOngoingImageBtn.addEventListener('click', () => ongoingImageUpload.click());
-                ongoingImageUpload.addEventListener('change', async (event) => {
-                    await handleLocalImageUpload(event.target, 'ongoingProjectImage', 'ongoingImagePreview');
+            const logoutBtnMobile = document.getElementById('logoutBtnMobile');
+            if (logoutBtnMobile) {
+                logoutBtnMobile.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    logout();
                 });
             }
+            
+            const ongoingProjectForm = document.getElementById('ongoingProjectForm');
+            if (ongoingProjectForm) ongoingProjectForm.addEventListener('submit', saveOngoingProject);
+            
+            const addOngoingProjectBtn = document.getElementById('addOngoingProjectBtn');
+            if (addOngoingProjectBtn) addOngoingProjectBtn.addEventListener('click', () => openOngoingProjectModal());
+            
+            const completedProjectForm = document.getElementById('completedProjectForm');
+            if (completedProjectForm) completedProjectForm.addEventListener('submit', saveCompletedProject);
+            
+            const addCompletedProjectBtn = document.getElementById('addCompletedProjectBtn');
+            if (addCompletedProjectBtn) addCompletedProjectBtn.addEventListener('click', () => openCompletedProjectModal());
+            
+            const testimonialForm = document.getElementById('testimonialForm');
+            if (testimonialForm) testimonialForm.addEventListener('submit', saveTestimonial);
+            
+            const addTestimonialBtn = document.getElementById('addTestimonialBtn');
+            if (addTestimonialBtn) addTestimonialBtn.addEventListener('click', () => openTestimonialModal());
+
+            const uploadOngoingImageBtn = document.getElementById('uploadOngoingImageBtn');
+            if (uploadOngoingImageBtn) {
+                uploadOngoingImageBtn.addEventListener('click', () => {
+                    const imageUpload = document.getElementById('ongoingImageUpload');
+                    if (imageUpload) imageUpload.click();
+                });
+            }
+            
+            const ongoingImageUpload = document.getElementById('ongoingImageUpload');
+            if (ongoingImageUpload) ongoingImageUpload.addEventListener('change', (e) => handleLocalImageUpload(e.target, 'ongoingProjectImage', 'ongoingImagePreview'));
+
+            const uploadOngoingFloorPlanBtn = document.getElementById('uploadOngoingFloorPlanBtn');
+            if (uploadOngoingFloorPlanBtn) {
+                uploadOngoingFloorPlanBtn.addEventListener('click', () => {
+                    const floorPlanUpload = document.getElementById('ongoingFloorPlanUpload');
+                    if (floorPlanUpload) floorPlanUpload.click();
+                });
+            }
+            
+            const ongoingFloorPlanUpload = document.getElementById('ongoingFloorPlanUpload');
+            if (ongoingFloorPlanUpload) ongoingFloorPlanUpload.addEventListener('change', (e) => handleLocalImageUpload(e.target, 'ongoingDetailFloorPlanImage', 'ongoingFloorPlanPreview'));
 
             const uploadCompletedImageBtn = document.getElementById('uploadCompletedImageBtn');
             const completedImageUpload = document.getElementById('completedImageUpload');
@@ -1635,6 +1696,31 @@
             }
             syncImagePreview(previewId, imagePath);
         }
+        function resolveImageUrl(imagePath) {
+            const value = String(imagePath || '').trim();
+            if (!value) {
+                return '';
+            }
+
+            if (
+                value.startsWith('http://') ||
+                value.startsWith('https://') ||
+                value.startsWith('data:') ||
+                value.startsWith('blob:')
+            ) {
+                return value;
+            }
+
+            if (value.startsWith('/')) {
+                return value;
+            }
+
+            if (value.startsWith('static/')) {
+                return `/${value}`;
+            }
+
+            return `/${value.replace(/^\.?\//, '')}`;
+        }
 
         function syncImagePreview(previewId, imagePath) {
             const imagePreview = document.getElementById(previewId);
@@ -1652,7 +1738,7 @@
                 imagePreview.classList.add('hidden');
                 imagePreview.removeAttribute('src');
             };
-            imagePreview.src = imagePath;
+            imagePreview.src = resolveImageUrl(imagePath);
             imagePreview.classList.remove('hidden');
         }
 
@@ -1699,12 +1785,16 @@
 
             try {
                 const uploadedPath = await uploadImageFile(file);
-                const galleryId = targetInputId === 'ongoingProjectImage' ? 'ongoingDefaultGallery' : 'completedDefaultGallery';
                 setProjectImage(targetInputId, previewId, uploadedPath);
-                markActiveDefaultImage(galleryId, uploadedPath);
+                
+                if (targetInputId === 'ongoingProjectImage' || targetInputId === 'completedProjectImage') {
+                    const galleryId = targetInputId === 'ongoingProjectImage' ? 'ongoingDefaultGallery' : 'completedDefaultGallery';
+                    markActiveDefaultImage(galleryId, uploadedPath);
+                }
+                
                 showAlert('Image uploaded successfully.', 'success');
             } catch (error) {
-                showAlert(error.message || 'Image upload failed.', 'danger');
+                showAlert('Image upload failed. Please try again.', 'danger');
             } finally {
                 fileInput.value = '';
             }
@@ -1830,8 +1920,12 @@
         function openOngoingProjectModal(projectId = null) {
             document.getElementById('ongoingProjectForm').reset();
             document.getElementById('ongoingImageUpload').value = '';
+            const ongoingFloorPlanUpload = document.getElementById('ongoingFloorPlanUpload');
+            if (ongoingFloorPlanUpload) {
+                ongoingFloorPlanUpload.value = '';
+            }
             if (projectId) {
-                const project = state.ongoingProjects.find(item => item.id === projectId);
+                const project = state.ongoingProjects.find(item => String(item.id) === String(projectId));
                 if (project) {
                     state.editingOngoingProject = projectId;
                     document.getElementById('ongoingProjectModalTitle').textContent = 'Edit Ongoing Project';
@@ -1853,6 +1947,7 @@
                 writeOngoingDetailToForm({});
             }
             syncActiveImageFromInput('ongoingDefaultGallery', 'ongoingProjectImage', 'ongoingImagePreview');
+            syncImagePreview('ongoingFloorPlanPreview', document.getElementById('ongoingDetailFloorPlanImage').value);
             openModal('ongoingProjectModal');
         }
 
@@ -1995,7 +2090,7 @@
 
             container.innerHTML = state.ongoingProjects.map((project) => `
                 <div class="card">
-                    ${project.image ? `<img src="${project.image}" alt="${project.title}" class="card-image">` : ''}
+                    ${project.image ? `<img src="${resolveImageUrl(project.image)}" alt="${project.title}" class="card-image">` : ''}
                     <div class="item-tags">
                         <span class="pill">${project.tag || 'Ongoing'}</span>
                     </div>
@@ -2077,7 +2172,7 @@
 
             container.innerHTML = state.completedProjects.map((project, index) => `
                 <div class="card">
-                    ${project.image ? `<img src="${project.image}" alt="${project.title}" class="card-image">` : ''}
+                    ${project.image ? `<img src="${resolveImageUrl(project.image)}" alt="${project.title}" class="card-image">` : ''}
                     <div class="card-title">${project.title || 'Completed Project'}</div>
                     <div class="card-text">${(project.description || '').substring(0, 100)}${project.description && project.description.length > 100 ? '...' : ''}</div>
                     <div class="item-tags">

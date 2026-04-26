@@ -1,6 +1,47 @@
 (function () {
   const BRAND_LOGO_PATH = "static/assets/images/dv-logo.png";
 
+  window.openFloorPlanModal = (imagePath, projectTitle) => {
+    const modalId = "floorPlanModal";
+    let modal = document.getElementById(modalId);
+
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = modalId;
+      modal.className = "floor-modal-overlay";
+      modal.innerHTML = `
+        <div class="floor-modal-content">
+          <div class="floor-modal-header">
+            <h3 id="floorModalTitle"></h3>
+            <button class="floor-modal-close" onclick="closeFloorPlanModal()">&times;</button>
+          </div>
+          <div class="floor-modal-body">
+            <img id="floorModalImage" src="" alt="Floor Plan">
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeFloorPlanModal();
+      });
+    }
+
+    document.getElementById("floorModalTitle").textContent = projectTitle + " - Floor Plan";
+    const img = document.getElementById("floorModalImage");
+    img.src = imagePath;
+    modal.classList.add("active");
+    document.body.style.overflow = "hidden";
+  };
+
+  window.closeFloorPlanModal = () => {
+    const modal = document.getElementById("floorPlanModal");
+    if (modal) {
+      modal.classList.remove("active");
+      document.body.style.overflow = "";
+    }
+  };
+
   const applyGlobalBranding = () => {
     const existingIcon = document.querySelector("link[rel='icon']");
     if (existingIcon) {
@@ -671,7 +712,14 @@
             <span>${metaOne}</span>
             <span>${metaTwo}</span>
           </div>
-          <a href="${link}" class="btn btn-primary"><i class="fas fa-arrow-right"></i> View Project</a>
+          <div class="project-card-footer">
+            <a href="${link}" class="btn btn-primary"><i class="fas fa-arrow-right"></i> View Project</a>
+            ${item.floorPlan || item.floor_plan ? `
+              <button class="floor-plan-btn" onclick="openFloorPlanModal('${toSafeText(item.floorPlan || item.floor_plan)}', '${title}')" title="View Floor Plan">
+                <i class="fas fa-map"></i>
+              </button>
+            ` : ""}
+          </div>
         </div>
       </article>`;
   };

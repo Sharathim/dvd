@@ -1,6 +1,6 @@
 const DEFAULT_ADMIN = {
     username: 'admin',
-    password: 'dv_admin_2026!',
+    password: 'abc',
     hash: 'pbkdf2:sha256:600000$MXtHyJWq0KqsEph6$e729a956a5914e3ac596da37da542aae4d53ab32635f975ef6b453a739401502'
 };
 
@@ -206,17 +206,29 @@ document.addEventListener('DOMContentLoaded', function () {
             const username = usernameInput.value.trim();
             const password = passwordInput.value;
 
-            const isValid = await attemptLogin(username, password);
-            if (isValid) {
-                localStorage.setItem(AUTH_KEYS.loggedIn, 'true');
-                localStorage.setItem(AUTH_KEYS.username, username);
-                window.location.href = '/admin/dashboard';
-                return;
-            }
+            try {
+                const response = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
 
-            setLoginError(loginError, 'Invalid username or password.');
-            submitButton.textContent = 'Login';
-            submitButton.disabled = false;
+                const result = await response.json().catch(() => ({}));
+
+                if (response.ok && result.ok) {
+                    localStorage.setItem(AUTH_KEYS.loggedIn, 'true');
+                    localStorage.setItem(AUTH_KEYS.username, result.username);
+                    window.location.href = 'admin_dashboard.html';
+                    return;
+                }
+
+                setLoginError(loginError, result.error || 'Invalid username or password.');
+            } catch (error) {
+                setLoginError(loginError, 'An error occurred. Please try again.');
+            } finally {
+                submitButton.textContent = 'Login';
+                submitButton.disabled = false;
+            }
         });
     }
 

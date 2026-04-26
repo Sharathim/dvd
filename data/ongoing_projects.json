@@ -1,56 +1,39 @@
 [
   {
     "id": 1,
-    "tag": "New Launch",
+    "tag": "Ongoing",
     "title": "DV Emerald",
     "description": "A refined residential address planned for comfort, convenience, and long-term value.",
     "meta_one": "Premium homes",
-    "meta_two": "Surapet",
-    "image": "static/images/slide1.jpg",
+    "meta_two": "Quality",
+    "image": "https://images.unsplash.com/photo-1515263487990-61b07816b324?auto=format&fit=crop&w=900&q=80",
     "slug": "dv-emerald",
     "detail": {
-      "hero_image": "https://images.unsplash.com/photo-1536376072261-38c75010e6c9?auto=format&fit=crop&w=1600&q=80",
-      "cover_image": "https://images.unsplash.com/photo-1515263487990-61b07816b324?auto=format&fit=crop&w=900&q=80",
       "location": "Surapet, Chennai",
       "summary_title": "Great location to match the great value",
       "summary_para_one": "The home of your dreams is finally here. DV Emerald is a thoughtfully designed project of six exclusive premium residential apartments.",
       "summary_para_two": "Nestled in the heart of Surapet, DV Emerald blends practical luxury, intelligent planning, and long-term comfort.",
-      "details_intro": "DV Emerald offers more than a home. It is a lifestyle designed for quality, privacy, and elevated living.",
+      "hero_image": "https://images.unsplash.com/photo-1536376072261-38c75010e6c9?auto=format&fit=crop&w=1600&q=80",
+      "cover_image": "https://images.unsplash.com/photo-1515263487990-61b07816b324?auto=format&fit=crop&w=900&q=80",
+      "floor_plan_image": "static/images/emerald-floor-drawing2.jpg",
+      "catalogue_url": "#",
       "stats": [
         "6 Premium 2BHK Apartments",
         "Stilt + 2 Floors",
         "850 Sq.Ft",
         "2 Units / Floor"
       ],
-      "floor_plan_image": "static/images/emerald-floor-drawing2.jpg",
-      "catalogue_url": "#",
-      "highlights_intro": "Experience enhanced lifestyle at DV Emerald with vastu-compliant units, superior ventilation, and trusted community planning.",
       "highlights": [
         "Premium Community Design",
         "Vastu Compliant",
         "Secured And Safe Community",
         "No Common Walls"
       ],
-      "location_heading": "Highly Prosperous Location",
-      "location_subtitle": "Your gateway to urban convenience, only 10 minutes from Anna Nagar.",
       "nearby_places": [
         "Meridian Hospital",
         "Saravana Stores",
         "PVR Cinemas",
         "Velammal New Gen School"
-      ],
-      "central_heading": "Centrally Located",
-      "central_tags": [
-        "Entertainment Hubs",
-        "Prominent Schools",
-        "Easy Connectivity",
-        "Healthcare Centres"
-      ],
-      "central_list_title": "Entertainment Hubs",
-      "central_list": [
-        "Sri Ganga Cinemas",
-        "PVR Cinemas",
-        "VR Mall"
       ],
       "availability_columns": [
         "First Floor",
