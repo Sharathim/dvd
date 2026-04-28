@@ -44,7 +44,10 @@
             border: 1px solid rgba(11, 11, 11, 0.1);
             border-radius: 18px;
             background: linear-gradient(135deg, #ffffff 0%, #faf9f5 100%);
-            box-shadow: 0 18px 48px rgba(0, 0, 0, 0.08);
+            box-shadow:
+                0 18px 48px rgba(0, 0, 0, 0.08),
+                0 8px 22px rgba(17, 17, 17, 0.08),
+                0 0 0 1px rgba(255, 255, 255, 0.6) inset;
             transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s var(--ease);
             height: 360px;
         }
@@ -63,7 +66,10 @@
         body[data-page="completed"] .completed-project-card:hover {
             transform: translateY(-6px);
             border-color: rgba(245, 196, 0, 0.45);
-            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.12);
+            box-shadow:
+                0 24px 60px rgba(0, 0, 0, 0.12),
+                0 12px 28px rgba(245, 196, 0, 0.12),
+                0 0 0 1px rgba(255, 255, 255, 0.7) inset;
         }
 
         body[data-page="completed"] .completed-project-card:hover::after {
@@ -76,6 +82,19 @@
             min-height: 100%;
             overflow: hidden;
             background: var(--ink);
+        }
+
+        body[data-page="completed"] .completed-project-media-button {
+            width: 100%;
+            padding: 0;
+            border: 0;
+            text-align: left;
+            cursor: zoom-in;
+        }
+
+        body[data-page="completed"] .completed-project-media-button:focus-visible {
+            outline: 3px solid rgba(245, 196, 0, 0.7);
+            outline-offset: -4px;
         }
 
         body[data-page="completed"] .completed-project-media::before {

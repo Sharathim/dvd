@@ -1,7 +1,7 @@
 (function () {
   const BRAND_LOGO_PATH = "static/assets/images/dv-logo.png";
 
-  window.openFloorPlanModal = (imagePath, projectTitle) => {
+  const ensureImageModal = () => {
     const modalId = "floorPlanModal";
     let modal = document.getElementById(modalId);
 
@@ -23,24 +23,37 @@
       document.body.appendChild(modal);
 
       modal.addEventListener("click", (e) => {
-        if (e.target === modal) closeFloorPlanModal();
+        if (e.target === modal) window.closeImageModal();
       });
     }
 
-    document.getElementById("floorModalTitle").textContent = projectTitle + " - Floor Plan";
+    return modal;
+  };
+
+  window.openImageModal = (imagePath, modalTitle = "Image Preview", imageAlt = "Image preview") => {
+    const modal = ensureImageModal();
+
+    document.getElementById("floorModalTitle").textContent = modalTitle;
     const img = document.getElementById("floorModalImage");
     img.src = imagePath;
+    img.alt = imageAlt;
     modal.classList.add("active");
     document.body.style.overflow = "hidden";
   };
 
-  window.closeFloorPlanModal = () => {
+  window.closeImageModal = () => {
     const modal = document.getElementById("floorPlanModal");
     if (modal) {
       modal.classList.remove("active");
       document.body.style.overflow = "";
     }
   };
+
+  window.openFloorPlanModal = (imagePath, projectTitle) => {
+    window.openImageModal(imagePath, projectTitle + " - Floor Plan", projectTitle + " floor plan");
+  };
+
+  window.closeFloorPlanModal = window.closeImageModal;
 
   const applyGlobalBranding = () => {
     const existingIcon = document.querySelector("link[rel='icon']");
@@ -393,10 +406,10 @@
 
     return `
       <article class="completed-project-card reveal visible">
-        <div class="completed-project-media">
+        <button type="button" class="completed-project-media completed-project-media-button" data-preview-image="${image}" data-preview-title="${title}" aria-label="View full image of ${title}">
           ${image ? `<img src="${image}" alt="${title}">` : ""}
           <span class="completed-project-index"><i class="fas fa-star"></i> Project ${String(index + 1).padStart(2, "0")}</span>
-        </div>
+        </button>
         <div class="completed-project-content">
           <div class="completed-project-heading">
             <p class="completed-project-kicker">${projectType}</p>
@@ -440,6 +453,18 @@
     }
 
     list.innerHTML = projects.map((item, index) => buildCompletedProjectCard(item, index)).join("");
+    list.querySelectorAll(".completed-project-media-button[data-preview-image]").forEach((button) => {
+      const imagePath = button.getAttribute("data-preview-image");
+      const title = button.getAttribute("data-preview-title") || "Completed Project";
+      if (!imagePath) {
+        button.disabled = true;
+        return;
+      }
+
+      button.addEventListener("click", () => {
+        window.openImageModal(imagePath, title + " - Project Image", title);
+      });
+    });
   }
 
   const loadOngoingProjectsData = async () => {
