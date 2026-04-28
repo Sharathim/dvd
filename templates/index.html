@@ -3,17 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DV Dream Homes | Premium Homes in Chennai</title>
+  <title>DV Dream Homes</title>
   <meta name="description" content="DV Dream Homes creates premium apartments, villas, and custom residences in Chennai with dependable construction quality and clear delivery.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="static/css/site.css">
   <link rel="stylesheet" href="static/css/chatbot-widget.css">
 </head>
-<body data-page="home">
+<body data-page="home" class="page-loader-active">
   <div id="progress"></div>
+  <div class="page-loader" id="pageLoader" aria-label="Loading DV Dream Homes">
+    <div class="page-loader-content">
+      <p class="page-loader-text" aria-label="WE BUILD THE TRUST">
+        <span>WE</span>
+        <span>BUILD</span>
+        <span>THE</span>
+        <span>TRUST</span>
+      </p>
+    </div>
+  </div>
 
   <div class="top-strip">
     <div class="container top-strip-inner">
@@ -28,8 +38,10 @@
   <header class="site-header" id="siteHeader">
     <div class="container header-inner">
       <a href="index.html" class="brand" aria-label="DV Dream Homes home">
-        <span class="brand-mark">DV</span>
-        <span class="brand-name">Dream Homes <span>Premium Real Estate</span></span>
+        <span class="brand-mark">
+          <img src="static/assets/images/dv-logo.png" alt="DV Dream Homes" class="brand-logo-image">
+        </span>
+        <span class="brand-name">Dream Homes <span>Built to last</span></span>
       </a>
       <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation" aria-expanded="false">
         <i class="fas fa-bars"></i>
@@ -50,7 +62,10 @@
 
   <main>
     <section class="hero" id="top">
-      <img class="hero-bg" src="static/images/Main.jpg" alt="Premium residential tower by DV Dream Homes">
+      <picture class="hero-media">
+        <source media="(max-width: 767px)" srcset="static/images/Main_phone.jpg">
+        <img class="hero-bg" src="static/images/Main.jpg" alt="Premium residential tower by DV Dream Homes" fetchpriority="high">
+      </picture>
       <div class="hero-inner">
         <p class="eyebrow reveal">Switch to smart living</p>
         <h1 class="reveal">A Chennai home story built with <em>trust</em>, detail, and delivery.</h1>
@@ -344,8 +359,10 @@
     <div class="container footer-grid">
       <div class="footer-col">
         <div class="footer-brand">
-          <span class="brand-mark">DV</span>
-          <span class="brand-name" style="color: var(--white);">Dream Homes <span style="color: rgba(255,255,255,0.52);">Premium Real Estate</span></span>
+          <span class="brand-mark">
+            <img src="static/assets/images/dv-logo.png" alt="DV Dream Homes" class="brand-logo-image">
+          </span>
+          <span class="brand-name" style="color: var(--white);">Dream Homes <span style="color: rgba(255,255,255,0.52);">Built to last</span></span>
         </div>
         <p>Founded in 2023, DV Dream Homes has quickly emerged as one of the respected names in Surapet's real estate landscape with a strong foundation in quality, innovation, and trust.</p>
       </div>
@@ -376,7 +393,7 @@
     <div class="footer-bottom">
       <div class="container footer-bottom-inner">
         <p>&copy; <span data-year></span> DV Dream Homes. All Rights Reserved.</p>
-        <p>Designed by <span>TechScale</span></p>
+        <p>Designed by <a href="https://techscalecorp.netlify.app/" target="_blank" rel="noopener noreferrer"><span>TechScale</span></a></p>
       </div>
     </div>
   </footer>

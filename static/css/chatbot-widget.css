@@ -63,7 +63,7 @@
 }
 
 .chat-header-title::before {
-  content: "✓";
+  content: "DV";
   color: var(--chat-gold);
   font-weight: 800;
   font-size: 1.1rem;

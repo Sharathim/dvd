@@ -20,6 +20,30 @@ UPLOADS_DIR = BASE_DIR / "static" / "assets" / "images" / "admin-uploads"
 ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".avif"}
 ALLOWED_DOCUMENT_EXTENSIONS = {".pdf"}
 CONTACT_TO_EMAIL = "sales@dvdreamhomes.info"
+CHATBOT_SYSTEM_PROMPT = """You are the DV Dream Homes customer support assistant for a premium real estate company in Chennai.
+
+Use only these facts:
+- Company: DV Dream Homes
+- Founded: 2023
+- Address: 63, New No 56, Surapet Main Road, Surapet, Chennai - 600 066, Tamil Nadu
+- Phone: +91 8778755146
+- Email: sales@dvdreamhomes.info
+- Specialties: Premium apartments, villas, custom residences
+- Values: Quality construction, clear delivery timelines, dependable service, customer-first philosophy
+
+Projects:
+- DV Emerald: New launch, premium homes, Surapet
+- DV Marina: Ongoing, modern living, quality build
+- DV Empire: Upcoming, family-focused premium development
+- Completed projects: Multiple delivered projects in Chennai
+
+Behavior:
+- Be concise, direct, and conversational.
+- Answer only the question asked.
+- Use short sentences or short bullets when helpful.
+- If a detail is unknown, say so plainly and direct the user to sales@dvdreamhomes.info or +91 8778755146.
+- Never invent prices, timelines, approvals, or specifications.
+"""
 
 LEGACY_ONGOING_DETAIL_ROUTES = {
     "dv-emerald.html": "dv-emerald",
@@ -170,58 +194,83 @@ def _send_contact_email(name: str, email: str, subject: str, message: str):
         server.send_message(email_message)
 
 
-def _call_gemini_chatbot(prompt: str) -> str:
+def _normalize_chat_message(role: str, content: str):
+    normalized_role = "assistant" if role == "bot" else "user"
+    clean_content = str(content or "").strip()
+    if not clean_content:
+        return None
+
+    return {
+        "role": normalized_role,
+        "content": clean_content[:500]
+    }
+
+
+def _call_groq_chatbot(user_message: str, history=None) -> str:
     # Reload .env at call time so key updates are picked up without a process restart.
     load_dotenv(BASE_DIR / ".env", override=False)
-    api_key = os.getenv("DV_GEMINI_API_KEY", "").strip()
-    model = os.getenv("DV_GEMINI_MODEL", "gemini-flash-lite-latest").strip() or "gemini-flash-lite-latest"
+    api_key = os.getenv("DV_GROQ_API_KEY", "").strip()
+    model = os.getenv("DV_GROQ_MODEL", "llama-3.1-8b-instant").strip() or "llama-3.1-8b-instant"
 
     if not api_key:
-        raise RuntimeError("DV_GEMINI_API_KEY is not configured")
+        raise RuntimeError("DV_GROQ_API_KEY is not configured")
 
-    endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+    endpoint = "https://api.groq.com/openai/v1/chat/completions"
+    messages = [{
+        "role": "system",
+        "content": CHATBOT_SYSTEM_PROMPT
+    }]
+    for item in history or []:
+        if not isinstance(item, dict):
+            continue
+        normalized = _normalize_chat_message(item.get("role", ""), item.get("content", ""))
+        if normalized:
+            messages.append(normalized)
+
+    current_message = str(user_message or "").strip()
+    if not current_message:
+        raise RuntimeError("Chat message is required")
+
+    messages.append({
+        "role": "user",
+        "content": current_message[:700]
+    })
+
     payload = {
-        "contents": [
-            {
-                "role": "user",
-                "parts": [{"text": prompt}]
-            }
-        ],
-        "generationConfig": {
-            "temperature": 0.2,
-            "topP": 0.9,
-            "topK": 30,
-            "maxOutputTokens": 150,
-        },
-        "safetySettings": [
-            {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
-            {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
-            {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
-            {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
-        ],
+        "model": model,
+        "messages": messages,
+        "temperature": 0.15,
+        "top_p": 0.9,
+        "max_tokens": 110,
     }
 
     request_body = json.dumps(payload).encode("utf-8")
     http_request = urlrequest.Request(
         endpoint,
         data=request_body,
-        headers={"Content-Type": "application/json"},
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "User-Agent": "DV-Dream-Homes/1.0"
+        },
         method="POST",
     )
+    opener = urlrequest.build_opener(urlrequest.ProxyHandler({}))
 
     try:
-        with urlrequest.urlopen(http_request, timeout=25) as response:
+        with opener.open(http_request, timeout=16) as response:
             response_payload = response.read().decode("utf-8")
     except urlerror.HTTPError as exc:
-        raise RuntimeError("Gemini API request failed") from exc
+        raise RuntimeError("Groq API request failed") from exc
     except Exception as exc:
-        raise RuntimeError("Gemini API connection failed") from exc
+        raise RuntimeError("Groq API connection failed") from exc
 
     try:
         payload_json = json.loads(response_payload)
-        response_text = payload_json["candidates"][0]["content"]["parts"][0]["text"].strip()
+        response_text = payload_json["choices"][0]["message"]["content"].strip()
     except (ValueError, KeyError, IndexError, TypeError) as exc:
-        raise RuntimeError("Gemini API returned an invalid response") from exc
+        raise RuntimeError("Groq API returned an invalid response") from exc
 
     if response_text.startswith("DV Assistant:"):
         response_text = response_text[len("DV Assistant:"):].strip()
@@ -229,7 +278,7 @@ def _call_gemini_chatbot(prompt: str) -> str:
         response_text = response_text[len("Assistant:"):].strip()
 
     if not response_text:
-        raise RuntimeError("Gemini API returned an empty response")
+        raise RuntimeError("Groq API returned an empty response")
 
     return response_text
 
@@ -331,15 +380,19 @@ def api_contact():
 @app.route("/api/chatbot", methods=["POST"])
 def api_chatbot():
     data = request.get_json(silent=True) or {}
-    prompt = str(data.get("prompt", "")).strip()
+    user_message = str(data.get("message", "")).strip()
+    history = data.get("history", [])
 
-    if not prompt:
-        return jsonify({"ok": False, "error": "Prompt is required."}), 400
+    if not user_message:
+        return jsonify({"ok": False, "error": "Message is required."}), 400
+
+    if not isinstance(history, list):
+        history = []
 
     try:
-        response_text = _call_gemini_chatbot(prompt)
+        response_text = _call_groq_chatbot(user_message, history[:6])
     except RuntimeError as exc:
-        if "DV_GEMINI_API_KEY" in str(exc):
+        if "DV_GROQ_API_KEY" in str(exc):
             return jsonify({"ok": False, "error": "Chatbot is not configured."}), 500
         return jsonify({"ok": False, "error": "Chatbot service is unavailable."}), 502
     except Exception:

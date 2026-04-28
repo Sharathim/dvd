@@ -72,6 +72,43 @@
 
   applyGlobalBranding();
 
+  const initPageLoader = () => {
+    const pageLoader = document.getElementById("pageLoader");
+    if (!pageLoader) {
+      return;
+    }
+
+    const shownAt = performance.now();
+    const minimumVisibleMs = 3000;
+    const absoluteFallbackMs = 4800;
+    let hasClosed = false;
+    const dismissLoader = () => {
+      if (hasClosed) {
+        return;
+      }
+
+      hasClosed = true;
+      pageLoader.classList.add("is-hidden");
+      document.body.classList.remove("page-loader-active");
+
+      window.setTimeout(() => {
+        pageLoader.remove();
+      }, 420);
+    };
+
+    const dismissWhenReady = () => {
+      const elapsed = performance.now() - shownAt;
+      const remaining = Math.max(0, minimumVisibleMs - elapsed);
+      window.setTimeout(dismissLoader, remaining);
+    };
+
+    window.addEventListener("load", dismissWhenReady, { once: true });
+    window.setTimeout(dismissWhenReady, minimumVisibleMs);
+    window.setTimeout(dismissLoader, absoluteFallbackMs);
+  };
+
+  initPageLoader();
+
   const TESTIMONIALS_FALLBACK = [
     {
       id: 1,
