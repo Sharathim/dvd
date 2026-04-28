@@ -1030,9 +1030,15 @@
     wrap.style.height = `${n * 100}vh`;
 
     let isMobile = window.innerWidth <= 980;
+    let activeSlideIndex = 0;
 
-    let snapTimeout = null;
-    let isSnapping = false;
+    const applyTrackIndex = (index) => {
+      const progress = n > 1 ? index / (n - 1) : 0;
+      const maxTrans = ((n - 1) / n) * 100;
+      txtTrack.style.transform = `translate3d(${-progress * maxTrans}%, 0, 0)`;
+      imgTrack.style.transform = `translate3d(${-maxTrans + (progress * maxTrans)}%, 0, 0)`;
+      setActiveStory(storySteps[index]);
+    };
 
     const onScroll = () => {
       if (!isMobile) return;
@@ -1048,34 +1054,10 @@
         progress = Math.min(1, Math.max(0, scrollTop / maxScroll));
       }
 
-      const maxTrans = ((n - 1) / n) * 100;
-      txtTrack.style.transform = `translate3d(${-progress * maxTrans}%, 0, 0)`;
-      imgTrack.style.transform = `translate3d(${-maxTrans + (progress * maxTrans)}%, 0, 0)`;
-
-      if (!isSnapping && scrollTop > 5 && scrollTop < maxScroll - 5) {
-        clearTimeout(snapTimeout);
-        snapTimeout = setTimeout(() => {
-          if (!isMobile) return;
-
-          const currentScrollTop = navH - wrap.getBoundingClientRect().top;
-          if (currentScrollTop > 5 && currentScrollTop < maxScroll - 5) {
-            const snapProgress = currentScrollTop / maxScroll;
-            const targetIndex = Math.round(snapProgress * (n - 1));
-            const targetScrollTop = targetIndex * (maxScroll / (n - 1));
-
-            if (Math.abs(currentScrollTop - targetScrollTop) > 10) {
-              isSnapping = true;
-              const absoluteTarget = window.scrollY + wrap.getBoundingClientRect().top - navH + targetScrollTop;
-
-              window.scrollTo({
-                top: absoluteTarget,
-                behavior: "smooth"
-              });
-
-              setTimeout(() => { isSnapping = false; }, 600);
-            }
-          }
-        }, 150);
+      const nextIndex = Math.max(0, Math.min(n - 1, Math.floor(progress * n)));
+      if (nextIndex !== activeSlideIndex) {
+        activeSlideIndex = nextIndex;
+        applyTrackIndex(activeSlideIndex);
       }
     };
 
@@ -1089,10 +1071,12 @@
         txtTrack.style.transform = "";
         imgTrack.style.transform = "";
       } else {
+        applyTrackIndex(activeSlideIndex);
         requestAnimationFrame(onScroll);
       }
     });
 
+    applyTrackIndex(activeSlideIndex);
     requestAnimationFrame(onScroll);
   };
 

@@ -3595,7 +3595,7 @@ body[data-page="ongoing"] .projects-section .section-intro p {
     height: 35%;
     background: var(--ink);
     will-change: transform;
-    transition: transform 0.1s ease-out;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .mobile-slide-img {
@@ -3621,7 +3621,7 @@ body[data-page="ongoing"] .projects-section .section-intro p {
     height: 65%;
     background: var(--soft);
     will-change: transform;
-    transition: transform 0.1s ease-out;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .mobile-slide-txt {
