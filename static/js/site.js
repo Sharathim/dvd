@@ -595,6 +595,7 @@
       : "<li>Not specified</li>";
 
     const catalogueUrl = toSafeText(detail.catalogueUrl || "#");
+    const catalogueFileName = toSafeText(`${String(project.title || "dv-catalogue").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "dv-catalogue"}-catalogue.pdf`);
     const floorPlanImage = toSafeText(detail.floorPlanImage);
     const centralImage = toSafeText(detail.centralImage);
 
@@ -652,7 +653,7 @@
       <section class="section-band"><p>Catalogue</p></section>
       <section class="section-tight">
         <div class="container text-center">
-          ${catalogueUrl && catalogueUrl !== "#" ? `<a href="${catalogueUrl}" class="btn btn-red" target="_blank" rel="noopener noreferrer"><i class="fas fa-file-arrow-down"></i> Download Catalogue (PDF)</a>` : `<div style="padding: 20px; color: #666; font-style: italic;">Will be uploaded soon</div>`}
+          ${catalogueUrl && catalogueUrl !== "#" ? `<a href="${catalogueUrl}" class="btn btn-red" download="${catalogueFileName}"><i class="fas fa-file-arrow-down"></i> Download Catalogue (PDF)</a>` : `<div style="padding: 20px; color: #666; font-style: italic;">Will be uploaded soon</div>`}
         </div>
       </section>
 
